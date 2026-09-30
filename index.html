@@ -1,0 +1,1392 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Blodgett CTBR-1 3D model</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500&family=Barlow+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#d9dcde; --ink:#1c2226; --muted:#56616a; --btn:#eef0f1; --line:#b3b9be;
+  --plate:#121212; --plate-ink:#efede7; --field:#d6d6d0; --field-ink:#4a4a48; --red:#c9301f;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){ --bg:#1c2023; --ink:#e6e9eb; --muted:#99a3ab; --btn:#283036; --line:#3c454c; }
+}
+:root[data-theme="dark"]{ --bg:#1c2023; --ink:#e6e9eb; --muted:#99a3ab; --btn:#283036; --line:#3c454c; }
+*,*::before,*::after{box-sizing:inherit}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;height:100%;background:var(--bg);color:var(--ink);
+  font-family:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;overflow:hidden;-webkit-font-smoothing:antialiased}
+#stage{position:fixed;inset:0;touch-action:none}
+#stage canvas{display:block;width:100%;height:100%}
+header{position:absolute;top:calc(env(safe-area-inset-top,0px) + 12px);left:14px;right:14px;pointer-events:none;max-width:520px}
+h1{font-family:"Barlow Condensed","Arial Narrow",sans-serif;font-weight:600;font-size:clamp(22px,4vw,34px);line-height:1;margin:0;letter-spacing:.005em}
+header p{margin:6px 0 0;color:var(--muted);font-size:14px;line-height:1.35;max-width:44ch}
+.dock{position:absolute;left:0;right:0;bottom:calc(env(safe-area-inset-bottom,0px) + 8px);display:flex;flex-direction:column;gap:6px;pointer-events:none;padding:0 10px}
+.dock > *{pointer-events:auto}
+.status{align-self:flex-start;max-width:min(62ch,100%);background:var(--btn);border:1px solid var(--line);border-left:4px solid var(--state,#7a848c);border-radius:6px;padding:6px 10px;font-size:13px;line-height:1.35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}
+.status.open{white-space:normal}
+.status b{font-weight:500}
+.controls{display:flex;flex-wrap:nowrap;gap:6px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.controls::-webkit-scrollbar{display:none}
+.chips[hidden]{display:none}
+.chips{align-items:center}
+.chiplabel{flex:0 0 auto;font:600 13px/1 "Barlow Condensed","Arial Narrow",sans-serif;color:var(--muted);padding:0 4px 0 2px;letter-spacing:.04em;text-transform:uppercase}
+#focusList{display:contents}
+#focusList button{flex:0 0 auto;white-space:nowrap;font:500 14px/1 "Barlow Condensed","Arial Narrow",sans-serif;color:var(--ink);background:var(--btn);border:1px solid var(--line);border-radius:999px;padding:8px 12px;cursor:pointer;min-height:36px}
+#focusList button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+#labels{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.lab3d{position:absolute;transform:translate(-50%,-120%);white-space:nowrap;font:500 13px/1 "Barlow Condensed","Arial Narrow",sans-serif;
+  color:var(--ink);background:var(--btn);border:1px solid var(--line);border-radius:4px;padding:4px 6px;opacity:.94}
+.lab3d::after{content:"";position:absolute;left:50%;top:100%;width:1px;height:8px;background:var(--ink);opacity:.5}
+.controls button{flex:0 0 auto;white-space:nowrap;font:500 15px/1 "Barlow Condensed","Arial Narrow",sans-serif;letter-spacing:.01em;color:var(--ink);
+  background:var(--btn);border:1px solid var(--line);border-radius:6px;padding:11px 14px;cursor:pointer;min-height:44px}
+.controls button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.controls button:focus-visible{outline:2px solid var(--red);outline-offset:2px}
+.plate{position:absolute;right:12px;top:calc(env(safe-area-inset-top,0px) + 12px);width:290px;background:var(--plate);color:var(--plate-ink);
+  border-radius:14px;padding:10px;box-shadow:0 10px 30px rgba(0,0,0,.28);font-family:"Barlow Condensed","Arial Narrow",sans-serif}
+.plate[hidden]{display:none}
+.plate .in{border:2px solid var(--plate-ink);border-radius:9px;padding:12px 12px 14px}
+.plate .maker{text-align:center;font-weight:600;font-size:17px;line-height:1.2;margin-bottom:10px}
+.plate .row{display:flex;align-items:center;gap:8px;margin-top:7px;font-weight:600;font-size:15px}
+.plate .lab{min-width:46px}
+.plate .f{background:var(--field);color:var(--field-ink);border-radius:2px;padding:2px 7px;font-weight:500;font-size:16px;flex:1;text-align:left}
+.plate .f.s{flex:0 0 auto;min-width:38px;text-align:center}
+.plate .cols{display:flex;gap:6px;flex:1}
+.plate .cols div{flex:1;text-align:center;font-size:12px}
+.plate .motor{text-align:center;margin-top:9px;font-weight:600;font-size:15px}
+@media (max-width:680px){
+  header p{display:none}
+  .plate{top:auto;bottom:calc(env(safe-area-inset-bottom,0px) + 96px);left:10px;right:10px;width:auto}
+}
+.swap{position:absolute;right:12px;top:calc(env(safe-area-inset-top,0px) + 12px);width:330px;max-height:calc(100vh - 200px);overflow:auto;background:var(--btn);color:var(--ink);
+  border:1px solid var(--line);border-radius:10px;padding:14px 16px 12px;box-shadow:0 10px 30px rgba(0,0,0,.22)}
+.swap[hidden]{display:none}
+.swap .count{font:500 14px/1 "Barlow Condensed","Arial Narrow",sans-serif;color:var(--muted)}
+.swap h2{font:600 24px/1.1 "Barlow Condensed","Arial Narrow",sans-serif;margin:6px 0 8px}
+.swap p{margin:0;font-size:15px;line-height:1.45;max-width:46ch}
+.swap .key{display:flex;flex-wrap:wrap;gap:6px 14px;margin:10px 0 0;padding:0;list-style:none;font-size:13px;color:var(--muted)}
+.swap .key li{display:flex;align-items:center;gap:6px}
+.swap .key i{width:10px;height:10px;border-radius:50%;display:inline-block}
+.swap .nav{display:flex;gap:8px;margin-top:12px}
+.swap .nav button{flex:1;font:500 17px/1 "Barlow Condensed","Arial Narrow",sans-serif;min-height:44px;border-radius:6px;cursor:pointer;
+  border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+.swap .nav button.primary{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.swap .nav button:disabled{opacity:.4;cursor:default}
+.swap .nav button:focus-visible{outline:2px solid var(--red);outline-offset:2px}
+body.swapping header{display:none}
+
+.tools{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.tools button{flex:1 1 30%;min-height:40px;font:500 15px/1 "Barlow Condensed","Arial Narrow",sans-serif;border-radius:6px;cursor:pointer;
+  border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+.tools button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.tools button:focus-visible{outline:2px solid var(--red);outline-offset:2px}
+.reading{font:600 30px/1.1 "Barlow Condensed","Arial Narrow",sans-serif;margin-top:10px;min-height:1em}
+.reading small{display:block;font:400 13px/1.35 "Barlow",system-ui,sans-serif;color:var(--muted);margin-top:3px}
+.settings{display:flex;flex-wrap:wrap;gap:8px 16px;margin-top:10px;font-size:14px;align-items:center}
+.settings input,.settings select{font:inherit;width:70px;padding:4px 6px;border:1px solid var(--line);border-radius:4px;background:var(--bg);color:var(--ink)}
+.checks{list-style:none;margin:10px 0 0;padding:0}
+.checks li{display:flex;gap:10px;padding:6px 0;border-top:1px solid var(--line);font-size:14px;line-height:1.35}
+.checks li b{flex:0 0 34px;font-weight:600}
+.checks li.ok b{color:#1f8a4c} .checks li.bad b{color:#c9301f}
+.checks li small{display:block;color:var(--muted)}
+.head{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.head .count{margin:0}
+.head button{font:500 14px/1 "Barlow Condensed","Arial Narrow",sans-serif;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:5px;padding:5px 9px;cursor:pointer;min-height:30px}
+.swap.collapsed > :not(.head){display:none}
+.swap.collapsed{max-height:none;overflow:visible}
+@media (max-width:680px){
+  .swap{left:10px;right:10px;width:auto;top:auto;bottom:calc(env(safe-area-inset-bottom,0px) + 96px);max-height:40vh;padding:10px 12px 10px}
+  .swap p{font-size:13px} .swap h2{font-size:19px;margin:4px 0 6px}
+  .tools button{min-height:36px;font-size:14px}
+  .checks li{font-size:13px}
+}
+.err{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:24px;text-align:center;color:var(--muted)}
+</style>
+</head>
+<body>
+<div id="stage" aria-label="Interactive 3D model of a Blodgett CTBR-1 convection oven"></div>
+
+<header>
+  <h1>Blodgett CTBR-1</h1>
+  <p>Countertop electric convection oven on its pedestal stand. Drag to orbit, pinch or scroll to zoom, tap the door or control panel to swing it open. Control wiring follows Blodgett print RB&CD 7404 from the compartment sticker. Every reading comes from a circuit solver running on that wiring. Open the test bench to meter it, fault it and check it.</p>
+</header>
+
+<aside class="plate" id="plate" hidden aria-label="Data plate">
+  <div class="in">
+    <div class="maker">THE G.S. BLODGETT CO., INC.<br>BURLINGTON, VT. U.S.A.</div>
+    <div class="row"><span class="lab">TYPE</span><span class="f">CTBR-1</span></div>
+    <div class="row"><span class="lab">SERIAL</span><span class="f">175CTB-7</span></div>
+    <div class="row"><span class="lab">VOLTS</span><span class="f">208-220</span></div>
+    <div class="row"><span class="lab"></span><div class="cols"><div>L-1</div><div>L-2</div><div>L-3</div></div></div>
+    <div class="row" style="margin-top:2px"><span class="lab">AMPS</span><div class="cols"><span class="f s">12</span><span class="f s">12</span><span class="f s">25</span></div></div>
+    <div class="row"><span class="lab">KW</span><span class="f s">9.0</span><span>HZ</span><span class="f s">60</span><span>PHASE</span><span class="f s">3</span></div>
+    <div class="motor">MOTOR</div>
+    <div class="row"><span class="lab">VAC</span><span class="f">208</span><span>AMPS</span><span class="f s">2.8</span></div>
+  </div>
+</aside>
+
+<aside class="swap" id="swap" hidden aria-label="Motor swap steps">
+  <div class="count" id="swapCount"></div>
+  <h2 id="swapTitle"></h2>
+  <p id="swapText"></p>
+  <ul class="key" aria-hidden="true">
+    <li><i style="background:#ff3b30"></i>Coming out</li>
+    <li><i style="background:#2ecc71"></i>Going in</li>
+    <li><i style="background:#ffb020"></i>Capped off</li>
+  </ul>
+  <div class="nav"><button id="swapBack">Back</button><button id="swapNext" class="primary">Next</button></div>
+</aside>
+<aside class="swap bench" id="bench" hidden aria-label="Test bench">
+  <div class="count">Test bench</div>
+  <h2 id="benchHead">Breaker on</h2>
+  <div class="tools" role="group" aria-label="Tool">
+    <button data-tool="operate" aria-pressed="true">Operate</button>
+    <button data-tool="volt" aria-pressed="false">Voltmeter</button>
+    <button data-tool="clamp" aria-pressed="false">Clamp meter</button>
+    <button data-tool="short" aria-pressed="false">Short</button>
+    <button data-tool="ground" aria-pressed="false">Ground fault</button>
+    <button data-tool="cut" aria-pressed="false">Open a wire</button>
+  </div>
+  <p id="benchHint" style="margin-top:10px"></p>
+  <div class="reading" id="reading" aria-live="polite"></div>
+  <div class="settings">
+    <label>Service <select id="svcSel" style="width:auto"><option value="240D" selected>240 V 3-phase</option><option value="208Y">208Y/120 V</option></select></label>
+    <label>Breaker <select id="brkSel"><option>20</option><option selected>30</option><option>40</option><option>50</option></select> A</label>
+    <label>Each element <input id="elemR" type="number" step="0.1" min="1" value="9.6"> Ω</label>
+  </div>
+  <div class="nav"><button id="bResetBrk">Reset breaker and fuses</button><button id="bClear">Clear faults</button></div>
+  <div class="nav" style="margin-top:8px"><button id="bAudit">List every wire</button><button id="bCheck" class="primary">Run wiring check</button></div>
+  <ol class="checks" id="checks"></ol>
+</aside>
+<div id="labels" aria-hidden="true"></div>
+<div class="dock">
+  <div class="status" id="status" role="status" aria-live="polite" title="Tap to expand"></div>
+  <div class="controls chips" id="focus" hidden aria-label="Focus on a system"><span class="chiplabel">Focus</span><span id="focusList" class="controls"></span></div>
+  <div class="controls" role="toolbar" aria-label="Oven controls">
+    <button id="bDoor" aria-pressed="false">Open door</button>
+    <button id="bPanel" aria-pressed="false">Open control panel</button>
+    <button id="bBlower" aria-pressed="false">Turn blower on</button>
+    <button id="bCool" aria-pressed="false">Cool down: Auto</button>
+    <button id="bHeat" aria-pressed="false">Call for heat</button>
+    <button id="bFocus" aria-pressed="false">Focus</button>
+    <button id="bBench" aria-pressed="false">Test bench</button>
+    <button id="bSwap" aria-pressed="false">Motor swap</button>
+    <button id="bWire" aria-pressed="false">Show wiring</button>
+    <button id="bBuilt" aria-pressed="false">Show as-built wire colors</button>
+    <button id="bPlate" aria-pressed="false">Show data plate</button>
+    <button id="bReset">Reset view</button>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+(function(){
+const stage = document.getElementById('stage');
+const CF = '"Barlow Condensed","Arial Narrow",sans-serif';
+const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+function fail(msg){ stage.innerHTML = '<div class="err">'+msg+'</div>'; }
+if (typeof THREE === 'undefined' || !THREE.OrbitControls){ fail('The 3D library did not load. Check your connection and reload the page.'); return; }
+
+const fontsReady = (document.fonts && document.fonts.load)
+  ? Promise.race([
+      Promise.all([document.fonts.load('600 40px "Barlow Condensed"'), document.fonts.load('700 40px "Barlow Condensed"')]),
+      new Promise(r => setTimeout(r, 1800))
+    ]).catch(()=>{})
+  : Promise.resolve();
+fontsReady.then(init);
+
+/* ---------- canvas textures ---------- */
+function canvasTex(w, h, draw, repeat){
+  const c = document.createElement('canvas'); c.width = w; c.height = h;
+  draw(c.getContext('2d'), w, h);
+  const t = new THREE.CanvasTexture(c);
+  t.encoding = THREE.sRGBEncoding;
+  t.anisotropy = 8;
+  if (repeat){ t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(repeat[0], repeat[1]); }
+  return t;
+}
+function brushed(ctx, w, h, base){
+  ctx.fillStyle = base; ctx.fillRect(0,0,w,h);
+  for (let i=0;i<w*2.2;i++){
+    const x = Math.random()*w, a = 0.03+Math.random()*0.08;
+    ctx.strokeStyle = Math.random()<0.5 ? 'rgba(255,255,255,'+a+')' : 'rgba(60,66,72,'+a+')';
+    ctx.lineWidth = Math.random()*1.4+0.3;
+    ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x+(Math.random()-0.5)*3,h); ctx.stroke();
+  }
+}
+function rr(ctx,x,y,w,h,r){ ctx.beginPath(); ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r); ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); }
+
+const makeBrushed = () => canvasTex(256,256,(c,w,h)=>brushed(c,w,h,'#e8ebed'),[2,2]);
+const makeSpeckle = () => canvasTex(512,512,(c,w,h)=>{
+  c.fillStyle='#626e79'; c.fillRect(0,0,w,h);
+  for(let i=0;i<4200;i++){ const a=0.35+Math.random()*0.6; c.fillStyle='rgba(236,240,244,'+a+')';
+    const s=0.6+Math.random()*1.6; c.fillRect(Math.random()*w,Math.random()*h,s,s); }
+  for(let i=0;i<1400;i++){ c.fillStyle='rgba(28,34,40,'+(0.3+Math.random()*0.5)+')';
+    const s=0.8+Math.random()*1.8; c.fillRect(Math.random()*w,Math.random()*h,s,s); }
+},[3,3]);
+const makePerf = () => canvasTex(128,128,(c,w,h)=>{
+  c.fillStyle='#17181a'; c.fillRect(0,0,w,h); c.fillStyle='#3a3e42';
+  for(let y=4;y<h;y+=8) for(let x=(y%16?4:8);x<w;x+=8){ c.beginPath(); c.arc(x,y,2.3,0,Math.PI*2); c.fill(); }
+},[5,5]);
+
+function makeBadge(){
+  return canvasTex(400,90,(c,w,h)=>{
+    const g=c.createLinearGradient(0,0,0,h); g.addColorStop(0,'#f3f5f6'); g.addColorStop(.5,'#8d9499'); g.addColorStop(1,'#e2e5e7');
+    c.fillStyle=g; rr(c,0,0,w,h,16); c.fill();
+    const cg=c.createLinearGradient(0,14,0,h-14); cg.addColorStop(0,'#cc8866'); cg.addColorStop(1,'#98503a');
+    c.fillStyle=cg; rr(c,42,14,w-84,h-28,6); c.fill();
+    c.font='700 50px '+CF; c.textBaseline='middle';
+    const word='BLODGETT', sp=6; let tw=0; for(const ch of word) tw+=c.measureText(ch).width+sp; tw-=sp;
+    let x=(w-tw)/2;
+    for(const ch of word){ c.fillStyle='rgba(40,20,10,.55)'; c.fillText(ch,x+2,h/2+3); c.fillStyle='#eef1f2'; c.fillText(ch,x,h/2+1); x+=c.measureText(ch).width+sp; }
+    c.fillStyle='#6d7479'; [[18,h/2],[w-18,h/2]].forEach(p=>{c.beginPath();c.arc(p[0],p[1],6,0,Math.PI*2);c.fill();});
+  });
+}
+
+function makePlate(){
+  return canvasTex(680,590,(c,w,h)=>{
+    c.fillStyle='#ecebe6'; rr(c,0,0,w,h,34); c.fill();
+    c.fillStyle='#131313'; rr(c,10,10,w-20,h-20,28); c.fill();
+    c.strokeStyle='#ecebe6'; c.lineWidth=5; rr(c,26,26,w-52,h-52,20); c.stroke();
+    c.fillStyle='#ecebe6'; c.textAlign='center'; c.textBaseline='middle';
+    c.font='600 40px '+CF; c.fillText('THE G.S. BLODGETT CO., INC.', w/2, 72); c.fillText('BURLINGTON, VT. U.S.A.', w/2, 116);
+    const field=(x,y,fw,txt)=>{ c.fillStyle='#d4d4ce'; c.fillRect(x,y-22,fw,44); c.fillStyle='#4f4f4c'; c.font='500 36px '+CF; c.textAlign='left'; c.fillText(txt,x+10,y+2); };
+    const lab=(x,y,txt,sz)=>{ c.fillStyle='#ecebe6'; c.font='600 '+(sz||34)+'px '+CF; c.textAlign='left'; c.fillText(txt,x,y); };
+    lab(48,178,'TYPE'); field(160,178,310,'CTBR-1');
+    lab(48,238,'SERIAL'); field(160,238,310,'175CTB-7');
+    lab(48,298,'VOLTS'); field(160,298,310,'208-220');
+    c.strokeStyle='#ecebe6'; c.lineWidth=5; c.beginPath(); c.arc(565,245,56,0,Math.PI*2); c.stroke();
+    c.textAlign='center'; c.font='700 44px '+CF; c.fillText('UL',565,247); c.font='600 32px '+CF; c.fillText('LISTED',565,165); c.fillText('453B',565,326);
+    lab(215,345,'L-1',28); lab(345,345,'L-2',28); lab(475,345,'L-3',28);
+    lab(48,385,'AMPS'); field(160,385,115,'12'); field(290,385,115,'12'); field(420,385,115,'25');
+    lab(48,445,'KW'); field(110,445,110,'9.0'); lab(240,445,'HZ'); field(292,445,100,'60'); lab(412,445,'PHASE'); field(528,445,90,'3');
+    c.textAlign='center'; c.fillStyle='#ecebe6'; c.font='600 34px '+CF; c.fillText('MOTOR', w/2, 494);
+    lab(48,540,'VAC'); field(118,540,200,'208'); lab(345,540,'AMPS'); field(430,540,130,'2.8');
+  });
+}
+
+// panel face: 7 x 18 in at 50 px/in. canvas x = (lx+7)*50, y = (18-ly)*50
+function makePanelFace(){
+  return canvasTex(350,900,(c,w,h)=>{
+    brushed(c,w,h,'#cbd0d4');
+    const px = lx => (lx+7)*50, py = ly => (18-ly)*50;
+    const rg=c.createRadialGradient(px(-3.2),py(15.6),30,px(-3.2),py(15.6),78);
+    rg.addColorStop(0,'rgba(120,78,48,0)'); rg.addColorStop(.6,'rgba(120,78,48,.38)'); rg.addColorStop(1,'rgba(120,78,48,0)');
+    c.fillStyle=rg; c.fillRect(0,0,w,py(12.8));
+    c.fillStyle='#2a2e31'; c.textAlign='center'; c.textBaseline='middle'; c.font='600 25px '+CF;
+    c.fillText('LIGHT OFF', px(-3.2), py(12.15)); c.fillText('OVEN READY', px(-3.2), py(11.65));
+    c.fillText('BLOWER', px(-4.7), py(8.75));
+    c.fillText('COOL', px(-1.8), py(8.25)); c.fillText('DOWN', px(-1.8), py(7.75));
+    const hg=c.createLinearGradient(0,py(0.6),0,py(4.2)); hg.addColorStop(0,'rgba(60,40,30,.0)'); hg.addColorStop(1,'rgba(60,40,30,.12)');
+    c.fillStyle=hg; c.fillRect(0,py(4.2),w,py(0.6)-py(4.2));
+  });
+}
+
+function makeSwitchFace(bg, top, bottom, ink){
+  return canvasTex(96,160,(c,w,h)=>{
+    c.fillStyle=bg; c.fillRect(0,0,w,h);
+    c.fillStyle='rgba(0,0,0,.18)'; c.fillRect(0,h/2-2,w,3);
+    c.fillStyle=ink; c.textAlign='center'; c.textBaseline='middle'; c.font='600 30px '+CF;
+    c.fillText(top,w/2,h*0.25); c.fillText(bottom,w/2,h*0.75);
+  });
+}
+function makeStripLabel(){
+  return canvasTex(380,50,(c,w,h)=>{
+    c.fillStyle='#d9c9a6'; c.fillRect(0,0,w,h);
+    c.fillStyle='#2a2420'; c.textAlign='center'; c.textBaseline='middle'; c.font='600 34px '+CF;
+    [['A',70],['B',190],['C',310]].forEach(t=>c.fillText(t[0],t[1],h/2+1));
+  });
+}
+function makeSchematic(){
+  return canvasTex(400,500,(c,w,h)=>{
+    c.fillStyle='#e6dfcc'; c.fillRect(0,0,w,h);
+    c.strokeStyle='#3a3d44'; c.lineWidth=2; c.setLineDash([7,5]);
+    c.strokeRect(24,30,352,440); c.setLineDash([]);
+    c.lineWidth=2.4;
+    const L=(pts)=>{ c.beginPath(); c.moveTo(pts[0][0],pts[0][1]); for(let i=1;i<pts.length;i++) c.lineTo(pts[i][0],pts[i][1]); c.stroke(); };
+    L([[60,70],[340,70]]); L([[60,70],[60,430],[340,430]]); L([[340,70],[340,430]]);
+    c.strokeRect(220,95,100,60); c.strokeRect(80,300,120,90); c.strokeRect(240,300,80,70);
+    L([[60,190],[180,190],[180,240],[300,240]]); L([[120,70],[120,300]]); L([[260,155],[260,300]]);
+    c.fillStyle='#3a3d44'; [[60,190],[120,190],[180,240],[260,240]].forEach(q=>{c.beginPath();c.arc(q[0],q[1],5,0,7);c.fill();});
+    c.font='600 22px '+CF; c.textAlign='left';
+    c.fillText('THERMOSTAT',226,130); c.fillText('DOOR',88,325); c.fillText('INTERLOCK',88,350); c.fillText('SWITCH',88,375);
+    c.fillText('COM',250,330); c.fillText('N.O.',250,355); c.fillText('AUTO',70,215); c.fillText('MAN',70,260);
+    c.fillText('BL',130,280); c.fillText('Y',190,280); c.fillText('N.C.',270,280);
+    c.font='600 18px '+CF; c.fillText('CTB-1  RB&CD 7404',36,460);
+  });
+}
+
+function makeFirFace(){
+  return canvasTex(256,256,(c,w,h)=>{
+    c.fillStyle='#c3c6c8'; c.fillRect(0,0,w,h);
+    c.strokeStyle='#5d6266'; c.lineWidth=9; c.lineCap='round';
+    for(let i=0;i<6;i++){ const a0=Math.PI*(0.62+i*0.13); c.beginPath(); c.arc(128,128,100,a0,a0+0.09); c.stroke(); c.beginPath(); c.arc(128,128,80,a0,a0+0.09); c.stroke(); }
+    [[-0.35,0.2],[-0.95,-0.8]].forEach(q=>{ c.beginPath(); c.arc(128,128,100,q[0],q[0]+0.3); c.stroke(); });
+    c.fillStyle='#8f9497'; c.font='italic 700 64px '+CF; c.textAlign='center'; c.textBaseline='middle'; c.fillText('FIR',128,92);
+    c.fillStyle='#e3e5e6'; c.beginPath(); c.arc(128,140,16,0,7); c.fill(); c.strokeStyle='#7c8184'; c.lineWidth=3; c.stroke();
+  });
+}
+function makeMotorDiagram(){
+  return canvasTex(300,190,(c,w,h)=>{
+    c.fillStyle='#d4d6d6'; c.fillRect(0,0,w,h);
+    c.strokeStyle='#222'; c.fillStyle='#222'; c.lineWidth=2; c.font='600 15px '+CF; c.textBaseline='middle';
+    const rows=[['RED',22],['VIOLET',52],['Y/G',78],['ORANGE',106],['GRAY',140],['GRAY',162]];
+    rows.forEach(r=>{ c.fillText(r[0],30,r[1]-8); c.beginPath(); c.arc(24,r[1],3,0,7); c.stroke(); });
+    c.beginPath(); c.moveTo(27,22); c.lineTo(280,22); c.lineTo(280,122); c.stroke();
+    [[52,'MAIN 4P'],[70,'AUX 4P'],[106,'MAIN 6P'],[124,'AUX 6P']].forEach(q=>{ c.beginPath(); c.moveTo(27,q[0]); c.lineTo(280,q[0]); c.stroke(); c.fillText(q[1],180,q[0]-9); });
+    c.fillRect(120,58,18,3); c.fillRect(120,64,18,3); c.fillRect(120,112,18,3); c.fillRect(120,118,18,3);
+    c.beginPath(); c.moveTo(27,140); c.lineTo(280,140); c.lineTo(280,162); c.lineTo(27,162); c.stroke();
+    c.fillText('ELECTRONIC SWITCH',150,178);
+  });
+}
+function makeFirPlate(){
+  return canvasTex(360,220,(c,w,h)=>{
+    c.fillStyle='#e2e3e1'; c.fillRect(0,0,w,h);
+    c.fillStyle='#1d1d1d'; c.textBaseline='top'; c.font='700 26px '+CF; c.fillText('NIDEC FIR INTERNATIONAL S.r.l.',12,10);
+    c.font='500 18px '+CF;
+    ['Single phase motor    Blodgett Part 59288','TYPE 2799.2492','HP 0.25/0.08   V 208-240   Hz 60','A 1.9/1.6   RPM 1700/1100 (E.S.)','C 20/20 µF / 425V   THERMALLY PROTECTED'].forEach((t,i)=>c.fillText(t,12,46+i*33));
+  });
+}
+function makeTape(n){
+  return canvasTex(120,80,(c,w,h)=>{
+    c.fillStyle='#ecebe4'; c.fillRect(0,0,w,h);
+    c.fillStyle='rgba(0,0,0,.06)'; for(let i=0;i<30;i++) c.fillRect(Math.random()*w,Math.random()*h,2,2);
+    c.fillStyle='#6f6f6a'; c.font='400 44px "Comic Sans MS","Segoe Print",cursive'; c.textAlign='center'; c.textBaseline='middle'; c.fillText(n,w/2,h/2+2);
+  });
+}
+
+/* ---------- scene ---------- */
+function init(){
+  let renderer;
+  try { renderer = new THREE.WebGLRenderer({antialias:true, alpha:true}); }
+  catch(e){ fail('This browser could not start WebGL, so the 3D model cannot be shown.'); return; }
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio||1, 2));
+  renderer.outputEncoding = THREE.sRGBEncoding;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.05;
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.setClearColor(0x000000, 0);
+  stage.appendChild(renderer.domElement);
+
+  const V = (x,y,z) => new THREE.Vector3(x,y,z);
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(34, 1, 1, 1000);
+  const controls = new THREE.OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = true; controls.dampingFactor = 0.08;
+  controls.minDistance = 18; controls.maxDistance = 260;
+  controls.maxPolarAngle = Math.PI*0.53;
+
+  // studio environment for the stainless
+  const pmrem = new THREE.PMREMGenerator(renderer);
+  const env = new THREE.Scene();
+  const sg = new THREE.SphereGeometry(100, 32, 16), cols = [], p = sg.attributes.position;
+  for (let i=0;i<p.count;i++){ const t=(p.getY(i)/100+1)/2; const v=0.12+t*0.8; cols.push(v,v*1.01,v*1.03); }
+  sg.setAttribute('color', new THREE.Float32BufferAttribute(cols,3));
+  env.add(new THREE.Mesh(sg, new THREE.MeshBasicMaterial({side:THREE.BackSide, vertexColors:true})));
+  [[70,24,0,85,30,3],[26,60,-85,25,25,1.6],[26,60,85,35,-35,1.3],[60,14,0,30,90,1.2]].forEach(a=>{
+    const m=new THREE.Mesh(new THREE.PlaneGeometry(a[0],a[1]), new THREE.MeshBasicMaterial({color:new THREE.Color(a[5],a[5],a[5]), side:THREE.DoubleSide}));
+    m.position.set(a[2],a[3],a[4]); m.lookAt(0,0,0); env.add(m);
+  });
+  scene.environment = pmrem.fromScene(env, 0.04).texture;
+
+  scene.add(new THREE.HemisphereLight(0xffffff, 0x444444, 0.35));
+  const sun = new THREE.DirectionalLight(0xffffff, 1.1);
+  sun.position.set(40, 90, 60); sun.target.position.set(0,20,0);
+  sun.castShadow = true; sun.shadow.mapSize.set(2048,2048);
+  Object.assign(sun.shadow.camera, {left:-48,right:48,top:48,bottom:-48,near:10,far:220});
+  sun.shadow.bias = -0.0006;
+  scene.add(sun, sun.target);
+  const fill = new THREE.PointLight(0xffffff, 0, 30, 2); fill.position.set(-11, 31, 16); scene.add(fill);
+
+  const ground = new THREE.Mesh(new THREE.PlaneGeometry(400,400), new THREE.ShadowMaterial({opacity:0.2}));
+  ground.rotation.x = -Math.PI/2; ground.receiveShadow = true; scene.add(ground);
+
+  /* materials */
+  const steel = new THREE.MeshStandardMaterial({color:0xd4d9dd, metalness:0.9, roughness:0.33, map:makeBrushed()});
+  const steelShell = steel.clone();
+  const steelDull = new THREE.MeshStandardMaterial({color:0xb7bcc0, metalness:0.75, roughness:0.55});
+  const bright = new THREE.MeshStandardMaterial({color:0xe2e6e9, metalness:1, roughness:0.22});
+  const brass = new THREE.MeshStandardMaterial({color:0xc9a55c, metalness:1, roughness:0.35});
+  const paint = new THREE.MeshStandardMaterial({color:0x1b1d1f, metalness:0.3, roughness:0.6});
+  const paintShell = paint.clone();
+  const iron = new THREE.MeshStandardMaterial({color:0x2a2c2e, metalness:0.45, roughness:0.62});
+  const bakelite = new THREE.MeshStandardMaterial({color:0x2b211c, metalness:0.05, roughness:0.5});
+  const ceramic = new THREE.MeshStandardMaterial({color:0xe9e4d8, metalness:0, roughness:0.5});
+  const rubber = new THREE.MeshStandardMaterial({color:0x151515, metalness:0, roughness:0.8});
+  const glass = new THREE.MeshPhysicalMaterial({color:0xa6b8c3, metalness:0, roughness:0.04, transparent:true, opacity:0.26, clearcoat:1, depthWrite:false});
+  const hidden = new THREE.MeshBasicMaterial({visible:false});
+  const enamel = new THREE.MeshStandardMaterial({map:makeSpeckle(), roughness:0.5, metalness:0.05, side:THREE.BackSide});
+  const perfMat = new THREE.MeshStandardMaterial({map:makePerf(), roughness:0.8, metalness:0.2, side:THREE.BackSide});
+  const plateMat = new THREE.MeshStandardMaterial({color:0x8e959a, metalness:0.7, roughness:0.5});
+  const elementMat = new THREE.MeshStandardMaterial({color:0x6d6a66, metalness:0.7, roughness:0.45, emissive:0xff4a14, emissiveIntensity:0});
+  const lampMat = new THREE.MeshStandardMaterial({color:0x6a1c14, roughness:0.35, emissive:0xff2a10, emissiveIntensity:0});
+  const shellMats = [steelShell, paintShell, enamel, perfMat];
+
+  function mesh(geo, mat, x, y, z, parent){ const m=new THREE.Mesh(geo,mat); m.position.set(x,y,z); m.castShadow=true; m.receiveShadow=true; parent.add(m); return m; }
+  const box = (w,h,d,mat,x,y,z,parent) => mesh(new THREE.BoxGeometry(w,h,d),mat,x,y,z,parent);
+  const cyl = (r,h,mat,x,y,z,parent,seg) => mesh(new THREE.CylinderGeometry(r,r,h,seg||28),mat,x,y,z,parent);
+
+  /* pedestal stand */
+  const stand = new THREE.Group(); scene.add(stand);
+  for (let i=0;i<4;i++){
+    const g=new THREE.Group(); g.rotation.y=Math.PI/4+i*Math.PI/2; stand.add(g);
+    box(13,1.6,2.4,iron,7,1.3,0,g);
+    cyl(1.2,0.6,rubber,13,0.3,0,g);
+  }
+  cyl(2.6,2.4,iron,0,1.4,0,stand);
+  cyl(1.35,16.6,iron,0,10.6,0,stand);
+  cyl(3.6,0.5,iron,0,19.1,0,stand);
+  box(27,0.7,23,steelDull,0,19.7,0,stand);
+
+  /* oven cabinet (world = oven group, origin at floor) */
+  const oven = new THREE.Group(); scene.add(oven);
+  const yb = 21.2, yt = 39.2, yc = (yb+yt)/2;
+  box(31,1.1,26,steelShell,0,20.65,0.3,oven);
+  box(0.5,18,25,paintShell,-14.75,yc,-0.2,oven);
+  box(0.5,18,25,paintShell,14.75,yc,-0.2,oven);
+  box(30,18,0.5,paintShell,0,yc,-12.45,oven);
+  box(31.4,1.3,26.4,steelShell,0,yt+0.65,0.2,oven);
+  const lip = cyl(0.66,31.4,steelShell,0,yt+0.65,13.4,oven); lip.rotation.z=Math.PI/2;
+  box(2.2,18,0.7,steelShell,-6.5,yc,12.55,oven);
+  box(1.0,18,0.7,steelShell,14.1,yc,12.55,oven);
+  box(19,1.2,0.7,steelShell,4.1,yt-0.6,12.55,oven);
+  box(19,1.2,0.7,steelShell,4.1,yb+0.6,12.55,oven);
+
+  const cav = new THREE.Mesh(new THREE.BoxGeometry(19,15.6,22), [enamel,enamel,enamel,enamel,hidden,enamel]);
+  cav.position.set(4.1,yc,1.1); cav.receiveShadow = true; oven.add(cav);
+  const ovenGlow = new THREE.PointLight(0xff7a33, 0, 34, 2); ovenGlow.position.set(4,yc,2); oven.add(ovenGlow);
+
+  // blower wheel, axis along x
+  const blowerMount = new THREE.Group(); blowerMount.position.set(-3.4,yc,1.5); blowerMount.rotation.z=-Math.PI/2; oven.add(blowerMount);
+  const wheel = new THREE.Group(); blowerMount.add(wheel);
+  for (let i=0;i<36;i++){ const a=i/36*Math.PI*2; const b=box(1.1,2.9,0.1,bright,Math.cos(a)*4.4,0,Math.sin(a)*4.4,wheel); b.rotation.y=-a+0.55; }
+  [-1.5,1.5].forEach(y=>{ const t=mesh(new THREE.TorusGeometry(4.55,0.12,6,48),bright,0,y,0,wheel); t.rotation.x=Math.PI/2; });
+  cyl(4.8,0.14,steelDull,0,-1.55,0,wheel,40);
+  cyl(1.1,1.2,steelDull,0,-0.9,0,wheel);
+  cyl(0.3,4.2,iron,0,-3.4,0,blowerMount);
+
+  // rack guides on the right wall
+  [10,-8].forEach(z=>cyl(0.18,14,bright,12.9,yc,z,oven,10));
+  for (let i=0;i<10;i++){ const r=cyl(0.14,18.4,bright,12.7,yb+2.6+i*1.38,1,oven,8); r.rotation.x=Math.PI/2; }
+
+  /* ---------- terminals ---------- */
+  const T = {};
+  const screwGeo = new THREE.CylinderGeometry(0.17,0.17,0.16,10);
+  const UP = V(0,1,0);
+  function term(name, parent, pos, n, noScrew){
+    T[name] = {parent, p:pos, n:n.clone().normalize()};
+    if (!noScrew){ const s=new THREE.Mesh(screwGeo, brass); s.position.copy(pos); s.quaternion.setFromUnitVectors(UP, T[name].n); parent.add(s); T[name].screw=s; }
+  }
+  const FZ=V(0,0,1), BZ=V(0,0,-1), PX=V(1,0,0), NX=V(-1,0,0), PY=V(0,1,0);
+
+  /* ---------- two heating elements (open delta per print) ---------- */
+  const elemEnds = {};
+  // stud layout on the element terminal plate (partition wall, compartment side), from the photos
+  const S = {S1:[yb+16.9,-0.6], S2:[yb+16.5,0.4], S3:[yb+16.2,2.5], S4:[yb+16.9,3.4]};
+  function element(R, xr, key, s1, s2){
+    const ang = z => Math.asin((z-1.5)/R);
+    const a = ang(S[s1][1]), b = ang(S[s2][1]) + 2*Math.PI;
+    const P = t => [yc+R*Math.cos(t), 1.5+R*Math.sin(t)];
+    const leg = (s, q) => [V(-8.0,S[s][0],S[s][1]), V(-6.6,S[s][0],S[s][1]), V(-5.0,S[s][0]-1.3,S[s][1]), V(xr,q[0],q[1])];
+    const pts = leg(s1, P(a));
+    for (let i=1;i<64;i++){ const q=P(a+(b-a)*i/64); pts.push(V(xr,q[0],q[1])); }
+    pts.push(...leg(s2, P(b)).reverse());
+    mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts,false,'centripetal'),280,0.2,8,false), elementMat,0,0,0,oven);
+    term(key+'1', oven, V(-8.05,S[s1][0],S[s1][1]), NX); term(key+'2', oven, V(-8.05,S[s2][0],S[s2][1]), NX);
+  }
+  element(5.3,-3.2,'HA','S4','S1'); element(6.1,-2.6,'HB','S3','S2');
+  // terminal plate, studs and the ceramic jumper block
+  box(0.15,2.2,5.8,steelDull,-7.7,yb+16.55,1.4,oven);
+  Object.values(S).forEach(q=>{ const st=cyl(0.14,0.9,bright,-8.1,q[0],q[1],oven,10); st.rotation.z=Math.PI/2; });
+  box(0.7,0.9,1.5,ceramic,-8.05,yb+16.65,3.05,oven);
+
+  /* ---------- control compartment ---------- */
+  const comp = new THREE.Mesh(new THREE.BoxGeometry(7,18,24.5), [perfMat,perfMat,perfMat,perfMat,hidden,perfMat]);
+  comp.position.set(-11.1,yc,0.1); comp.receiveShadow = true; oven.add(comp);
+  box(6.6,4.4,0.25,plateMat,-11.1,yb+3.2,6.3,oven);     // lower mounting plate
+  box(5.8,7.5,0.25,plateMat,-11.5,yb+14.2,6.3,oven);    // upper mounting plate
+
+  // blower motor, shaft through the wall to the wheel
+  const fadeMat = m => { const c=m.clone(); c.transparent=true; return c; };
+  const oldMotor = new THREE.Group(); oven.add(oldMotor);
+  const oldMats = [fadeMat(steelDull), fadeMat(iron), fadeMat(bakelite), fadeMat(brass)];
+  const motor = cyl(3,5.6,oldMats[0],-10.9,yc,1.5,oldMotor,32); motor.rotation.z=Math.PI/2;
+  const bell = cyl(2.5,0.6,oldMats[1],-14.0,yc,1.5,oldMotor,32); bell.rotation.z=Math.PI/2;
+  const shaft = cyl(0.3,3,iron,-6.8,yc,1.5,oven,12); shaft.rotation.z=Math.PI/2;
+  box(1.6,0.9,0.7,oldMats[2],-11.0,yc,4.6,oldMotor);
+  term('M_Y', oven, V(-11.5,yc,5.0), FZ); term('M_BL', oven, V(-10.5,yc,5.0), FZ);
+  ['M_Y','M_BL'].forEach(n=>{ T[n].screw.material=oldMats[3]; oldMotor.add(T[n].screw); });
+
+  // replacement: Nidec FIR 2799.2492 (Blodgett 59288), capacitors in the terminal box
+  const newMotor = new THREE.Group(); oven.add(newMotor);
+  const firMat = new THREE.MeshStandardMaterial({color:0xc4c7c9, metalness:0.55, roughness:0.45, transparent:true});
+  const firDark = new THREE.MeshStandardMaterial({color:0x1a1a1a, roughness:0.6, transparent:true});
+  const sleeveMat = new THREE.MeshStandardMaterial({color:0xe3ddcf, roughness:0.9, transparent:true});
+  const newMats = [firMat, firDark, sleeveMat];
+  const nb = cyl(2.7,4.8,firMat,-11.0,yc,1.5,newMotor,40); nb.rotation.z=Math.PI/2;
+  const nf = cyl(2.95,0.45,firMat,-8.5,yc,1.5,newMotor,40); nf.rotation.z=Math.PI/2;
+  const ne = cyl(2.95,0.5,firMat,-13.6,yc,1.5,newMotor,40); ne.rotation.z=Math.PI/2;
+  const faceMat = new THREE.MeshStandardMaterial({map:makeFirFace(), metalness:0.4, roughness:0.5, transparent:true}); newMats.push(faceMat);
+  const face2 = new THREE.Mesh(new THREE.CircleGeometry(2.9,48), faceMat); face2.rotation.y=-Math.PI/2; face2.position.set(-13.86,yc,1.5); newMotor.add(face2);
+  box(4.8,2.8,4.2,firMat,-11.0,yc+3.8,1.5,newMotor);
+  box(1.4,1.8,0.5,firMat,-13.2,yc-2.2,-1.4,newMotor);
+  const dMat = new THREE.MeshStandardMaterial({map:makeMotorDiagram(), roughness:0.7, transparent:true}); newMats.push(dMat);
+  const diag = new THREE.Mesh(new THREE.PlaneGeometry(3.2,2.0), dMat); diag.rotation.x=-Math.PI/2; diag.position.set(-11.0,yc+5.21,1.3); newMotor.add(diag);
+  const pMat = new THREE.MeshStandardMaterial({map:makeFirPlate(), roughness:0.7, transparent:true}); newMats.push(pMat);
+  const npl = new THREE.Mesh(new THREE.PlaneGeometry(2.6,1.6), pMat); npl.position.set(-12.0,yc+3.8,3.61); newMotor.add(npl);
+  const grom = cyl(0.5,0.3,firDark,-10.0,yc+3.6,3.7,newMotor,20); grom.rotation.x=Math.PI/2;
+  const slv = cyl(0.36,2.4,sleeveMat,-10.0,yc+3.6,4.95,newMotor,14); slv.rotation.x=Math.PI/2;
+  [['NM_R',-0.18,0.12],['NM_V',0.12,0.14],['NM_O',-0.1,-0.14],['NM_G1',0.18,-0.08],['NM_G2',0.0,0.0],['NM_YG',-0.22,-0.02]]
+    .forEach(t=>term(t[0],oven,V(-10.0+t[1],yc+3.6+t[2],6.1),FZ,true));
+
+  // capped ends (wire nuts) and the chassis ground screw the Y/G lands on
+  const nutMatO = new THREE.MeshStandardMaterial({color:0xe8c33a, roughness:0.5});
+  const nutMatG = new THREE.MeshStandardMaterial({color:0xe8c33a, roughness:0.5});
+  const nuts = new THREE.Group(); oven.add(nuts);
+  [['CAP_OR',-9.3,yc+2.4,9.4,nutMatO],['CAP_G1',-8.5,yc+1.4,9.8,nutMatG]].forEach(t=>{
+    term(t[0],oven,V(t[1],t[2],t[3]),BZ,true);
+    const n=mesh(new THREE.ConeGeometry(0.3,0.8,14),t[4],t[1],t[2],t[3]+0.35,nuts); n.rotation.x=-Math.PI/2;
+  });
+  term('GND2', oven, V(-7.72,yb+17.45,-2.3), NX);
+  [['1',-1.0,1.3],['2',0.55,1.5],['3',2.9,2.1]].forEach(t=>{
+    const tp=new THREE.Mesh(new THREE.PlaneGeometry(t[2],0.9), new THREE.MeshStandardMaterial({map:makeTape(t[0]),roughness:0.9}));
+    tp.rotation.y=-Math.PI/2; tp.position.set(-7.72,yb+14.85,t[1]); oven.add(tp);
+  });
+
+  // contactor: line top, load bottom, coil on the sides
+  box(3.8,4.2,2.3,bakelite,-11.8,yb+14.6,7.6,oven);
+  box(3.4,0.9,0.4,ceramic,-11.8,yb+16.1,8.85,oven);
+  box(3.4,0.9,0.4,ceramic,-11.8,yb+13.1,8.85,oven);
+  [['T1',-13.0],['T2',-11.8],['T3',-10.6]].forEach(t=>term(t[0],oven,V(t[1],yb+16.1,9.1),FZ));
+  [['L1',-13.0],['L2',-11.8],['L3',-10.6]].forEach(t=>term(t[0],oven,V(t[1],yb+13.1,9.1),FZ));
+  term('A1', oven, V(-13.75,yb+14.6,8.2), NX); term('A2', oven, V(-9.85,yb+14.6,8.2), PX);
+
+  // capacitor (drops across the motor leads through the door switch N.C. contacts)
+  const capG = new THREE.Group(); oven.add(capG);
+  const capMats = [new THREE.MeshStandardMaterial({color:0x161616,metalness:0.2,roughness:0.5,transparent:true}), fadeMat(steelDull), fadeMat(brass)];
+  cyl(0.8,2.4,capMats[0],-8.7,yb+12.1,7.4,capG,24);
+  cyl(0.82,0.7,capMats[1],-8.7,yb+12.3,7.4,capG,24);
+  term('CAP1', oven, V(-9.0,yb+13.4,7.4), PY); term('CAP2', oven, V(-8.4,yb+13.4,7.4), PY);
+  ['CAP1','CAP2'].forEach(n=>{ T[n].screw.material=capMats[2]; capG.add(T[n].screw); });
+
+  // terminal block 1-2-3
+  box(3.8,2.2,1.2,paint,-11.8,yb+10.6,7.0,oven);
+  [['TB1',-13.0],['TB2',-11.8],['TB3',-10.6]].forEach(t=>term(t[0],oven,V(t[1],yb+11.3,7.7),FZ));
+  [['TB1L',-13.0],['TB2L',-11.8],['TB3L',-10.6]].forEach(t=>term(t[0],oven,V(t[1],yb+9.9,7.7),FZ));
+  const strip = new THREE.Mesh(new THREE.PlaneGeometry(3.8,0.5), new THREE.MeshStandardMaterial({map:makeStripLabel(),roughness:0.8}));
+  strip.position.set(-11.8,yb+10.6,7.62); oven.add(strip);
+
+  // 2-pole 10 A fuse block (left pole BL leg, right pole Y leg)
+  box(2.6,4.0,0.6,ceramic,-9.2,yb+3.3,6.75,oven);
+  const fuseMat = new THREE.MeshStandardMaterial({color:0xc6a36c, roughness:0.6});
+  [-9.85,-8.55].forEach(x=>{ cyl(0.38,2.4,fuseMat,x,yb+3.3,7.4,oven,14); cyl(0.42,0.3,bright,x,yb+4.5,7.4,oven,14); cyl(0.42,0.3,bright,x,yb+2.1,7.4,oven,14); });
+  term('FL_T',oven,V(-9.85,yb+5.0,7.5),FZ); term('FR_T',oven,V(-8.55,yb+5.0,7.5),FZ);
+  term('FL_B',oven,V(-9.85,yb+1.6,7.5),FZ); term('FR_B',oven,V(-8.55,yb+1.6,7.5),FZ);
+
+  // two door interlock microswitches on one bracket, one per pole: red tape (upper) and yellow tape (lower)
+  box(0.12,4.6,3.2,steelDull,-7.75,yb+5.6,11.0,oven);
+  box(1.9,0.12,3.2,steelDull,-6.8,yb+3.3,11.0,oven);
+  const tapeRed = new THREE.MeshStandardMaterial({color:0xd8261e, roughness:0.6}), tapeYel = new THREE.MeshStandardMaterial({color:0xe8c32a, roughness:0.6});
+  [[yb+6.6,'L',tapeRed],[yb+4.6,'R',tapeYel]].forEach(([y,p,tape])=>{
+    box(1.2,1.4,2.2,paint,-8.5,y,10.6,oven);
+    const bush = cyl(0.32,0.5,bright,-7.55,y,11.5,oven,16); bush.rotation.z=Math.PI/2;
+    const stem = cyl(0.13,4.4,bright,-6.3,y,11.5,oven,10); stem.rotation.z=Math.PI/2;
+    const coilPts=[]; for(let i=0;i<=120;i++){ const t=i/120, a=t*Math.PI*2*7; coilPts.push(V(-7.3+t*1.6, y+Math.cos(a)*0.3, 11.5+Math.sin(a)*0.3)); }
+    mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(coilPts),240,0.05,5,false),bright,0,0,0,oven);
+    const plunger = cyl(0.2,0.5,bright,-5.95,y,13.0,oven,12); plunger.rotation.x=Math.PI/2;
+    [['COM',-9.0,0.45],['NC',-8.5,0],['NO',-8.0,-0.45]].forEach(t=>term('DI_'+t[0]+'_'+p,oven,V(t[1],y+t[2],11.8),FZ));
+    box(0.5,0.3,0.6,tape,-9.2,y+0.85,11.9,oven);
+  });
+
+  // grounding lug
+  const lug = cyl(0.35,0.3,new THREE.MeshStandardMaterial({color:0x3c8a3f,metalness:0.6,roughness:0.4}),-14.3,yb+1.8,9.5,oven,12); lug.rotation.z=Math.PI/2;
+  term('GND', oven, V(-14.15,yb+1.8,9.5), PX, true);
+
+  const sticker = new THREE.Mesh(new THREE.PlaneGeometry(4,5), new THREE.MeshStandardMaterial({map:makeSchematic(),roughness:0.9}));
+  sticker.rotation.y = Math.PI/2; sticker.position.set(-14.47,yb+13.2,9.3); oven.add(sticker);
+
+  /* ---------- hinged control panel ---------- */
+  const panel = new THREE.Group(); panel.position.set(-7.6,yb,12.95); panel.userData.action='panel'; oven.add(panel);
+  box(7,18,0.4,steel,-3.5,9,0.2,panel);
+  const face = new THREE.Mesh(new THREE.PlaneGeometry(7,18), new THREE.MeshStandardMaterial({map:makePanelFace(), metalness:0.85, roughness:0.36}));
+  face.position.set(-3.5,9,0.41); panel.add(face);
+  const knobSkirt = cyl(1.05,0.25,steelDull,-3.2,15.6,0.55,panel); knobSkirt.rotation.x=Math.PI/2;
+  const knob = cyl(0.78,1.1,paint,-3.2,15.6,1.2,panel); knob.rotation.x=Math.PI/2;
+  box(0.18,0.9,0.2,bright,-3.2,15.95,1.8,panel);
+  box(1.8,0.75,0.25,steelDull,-3.2,12.9,0.52,panel);
+  box(1.5,0.5,0.3,lampMat,-3.2,12.9,0.62,panel);
+  box(1.3,1.9,0.3,steelDull,-4.7,10.2,0.55,panel);
+  const togglePivot = new THREE.Group(); togglePivot.position.set(-4.7,10.2,0.7); panel.add(togglePivot);
+  box(0.75,1.3,0.35,new THREE.MeshStandardMaterial({color:0x9ec2e3, roughness:0.4}),0,0,0.15,togglePivot);
+  const tFace = new THREE.Mesh(new THREE.PlaneGeometry(0.75,1.3), new THREE.MeshStandardMaterial({map:makeSwitchFace('#9ec2e3','ON','OFF','#2b3a46'),roughness:0.45}));
+  tFace.position.set(0,0,0.33); togglePivot.add(tFace);
+  box(1.45,2.1,0.3,paint,-1.8,9.7,0.55,panel);
+  const rocker = box(1,1.65,0.45,new THREE.MeshStandardMaterial({color:0xc42d1c, roughness:0.35}),-1.8,9.7,0.85,panel);
+  const rFace = new THREE.Mesh(new THREE.PlaneGeometry(1,1.65), new THREE.MeshStandardMaterial({map:makeSwitchFace('#c42d1c','MAN','AUTO','#f0c9c2'),roughness:0.4}));
+  rFace.position.set(0,0,0.231); rocker.add(rFace);
+  [7.9,7.4,6.9].forEach(y=>{ const s=cyl(0.13,0.1,iron,-3.2,y,0.46,panel,10); s.rotation.x=Math.PI/2; });
+  for (let i=0;i<5;i++){ const l=box(3,0.2,0.5,steel,-2.9,6.2-i*0.6,0.58,panel); l.rotation.x=-0.55; }
+  const hb = cyl(0.22,3,bright,-2.9,4.05,1.05,panel,12); hb.rotation.z=Math.PI/2;
+  [-4.2,-1.6].forEach(x=>{ const s=cyl(0.2,0.7,bright,x,4.05,0.72,panel,10); s.rotation.x=Math.PI/2; });
+  const plate = new THREE.Mesh(new THREE.PlaneGeometry(3.4,2.95), new THREE.MeshStandardMaterial({map:makePlate(), roughness:0.45, metalness:0.2}));
+  plate.position.set(-2.9,1.95,0.43); panel.add(plate);
+
+  // devices behind the panel
+  const ts = cyl(1.3,1.6,steelDull,-3.2,15.6,-0.8,panel,24); ts.rotation.x=Math.PI/2;
+  term('TS_A',panel,V(-3.8,15.6,-1.7),BZ); term('TS_B',panel,V(-2.6,15.6,-1.7),BZ);
+  box(1.8,0.9,1.1,bakelite,-3.2,12.9,-0.55,panel);
+  term('LP_W',panel,V(-3.75,12.9,-1.15),BZ); term('LP_O',panel,V(-2.65,12.9,-1.15),BZ);
+  box(1.3,1.9,1.5,bakelite,-4.7,10.2,-0.75,panel);
+  [['MS_BL_IN',-5.0,9.6],['MS_Y_IN',-4.4,9.6],['MS_BL_OUT',-5.0,10.8],['MS_Y_OUT',-4.4,10.8]].forEach(t=>term(t[0],panel,V(t[1],t[2],-1.55),BZ));
+  box(1.5,2.3,1.7,bakelite,-1.8,9.7,-0.85,panel);
+  [['CD_AUTO1',-2.2,10.5],['CD_COM1',-2.2,9.7],['CD_MAN1',-2.2,8.9],['CD_AUTO2',-1.4,10.5],['CD_COM2',-1.4,9.7],['CD_MAN2',-1.4,8.9]]
+    .forEach(t=>term(t[0],panel,V(t[1],t[2],-1.75),BZ));
+  term('TS_CAP',panel,V(-3.2,14.3,-1.3),BZ,true);
+  term('BULB',oven,V(-3.5,yt-1.7,9.2),PX,true);
+  const bulb = cyl(0.25,4,new THREE.MeshStandardMaterial({color:0xb87333,metalness:1,roughness:0.35}),-1.5,yt-1.7,9.2,oven,10); bulb.rotation.z=Math.PI/2;
+
+  /* ---------- hinged glass door ---------- */
+  const door = new THREE.Group(); door.position.set(14.6,yb,12.95); door.userData.action='door'; oven.add(door);
+  box(20,4,1.4,steel,-10,16,0.7,door);
+  box(20,3,1.4,steel,-10,1.5,0.7,door);
+  box(5,11,1.4,steel,-17.5,8.5,0.7,door);
+  box(3,11,1.4,steel,-1.5,8.5,0.7,door);
+  const g1 = new THREE.Mesh(new THREE.BoxGeometry(12,11,0.12), glass); g1.position.set(-9,8.5,1.25); door.add(g1);
+  const g2 = new THREE.Mesh(new THREE.BoxGeometry(12,11,0.12), glass); g2.position.set(-9,8.5,0.15); door.add(g2);
+  [[13,2.5],[4,2.5]].forEach(a=>{ const s=cyl(0.35,2,bright,-18.3,a[0],a[1],door,14); s.rotation.x=Math.PI/2; });
+  cyl(0.45,10.2,bright,-18.3,8.5,3.5,door,18);
+  const badge = new THREE.Mesh(new THREE.PlaneGeometry(7.4,1.66), new THREE.MeshStandardMaterial({map:makeBadge(), metalness:0.6, roughness:0.3}));
+  badge.position.set(-9,15.9,1.42); door.add(badge);
+  [2,16].forEach(y=>{ cyl(0.3,1.6,bright,0.15,y,0.7,door,12); });
+
+  /* ---------- supply cord: outside pigtail + internal run to the terminal block ---------- */
+  const cordPts=[[14.9,yt-2.2,-9.5],[17.5,yt-1,-9.5],[20.5,yt-4,-9],[21.6,yt-10,-8],[21.4,yt-15.5,-7.2]].map(q=>V(q[0],q[1],q[2]));
+  mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(cordPts),64,0.45,12,false),rubber,0,0,0,oven);
+  const endP = cordPts[cordPts.length-1];
+  const copper = new THREE.MeshStandardMaterial({color:0xd08a4a, metalness:1, roughness:0.35});
+  [[0xc62828,-0.7,0.2],[0x1e1e1e,-0.2,-0.5],[0xf0f0ee,0.4,0.4],[0x2e7d32,0.8,-0.2]].forEach(w=>{
+    const tip = endP.clone().add(V(w[1]*1.6,-3,w[2]*1.6));
+    const c = new THREE.CatmullRomCurve3([endP.clone(), endP.clone().add(V(w[1]*0.6,-1.2,w[2]*0.6)), tip]);
+    mesh(new THREE.TubeGeometry(c,16,0.17,8,false), new THREE.MeshStandardMaterial({color:w[0],roughness:0.6}),0,0,0,oven);
+    cyl(0.12,0.7,copper,tip.x,tip.y-0.3,tip.z,oven,8);
+  });
+  const inside = [V(14.9,yt-2.2,-9.5),V(13.8,yt-0.8,-11.3),V(0,yt-0.6,-11.5),V(-13.6,yt-0.8,-11.4),V(-14.0,yb+2,-11.2),V(-14.0,yb+0.8,-4),V(-13.9,yb+0.8,4.5),V(-13.6,yb+0.9,6.9)];
+  mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(inside,false,'centripetal'),120,0.45,10,false),rubber,0,0,0,oven);
+  term('CORD', oven, V(-13.6,yb+0.9,7.0), FZ, true);
+
+  /* ---------- wiring, point to point from the CTB-1 schematic ---------- */
+  const dashTex = canvasTex(64,4,(c,w,h)=>{ c.fillStyle='#5a5a5a'; c.fillRect(0,0,w,h); c.fillStyle='#ffffff'; c.fillRect(0,0,26,h); c.fillStyle='#b0b0b0'; c.fillRect(26,0,6,h); c.fillRect(58,0,6,h); },[1,1]);
+  dashTex.wrapS = THREE.RepeatWrapping; dashTex.wrapT = THREE.ClampToEdgeWrapping; dashTex.encoding = THREE.LinearEncoding;
+  const HEX = {R:0xc62828, Y:0xe8c33a, BL:0x2f6fd6, O:0xe07b2e, W:0xefefea, BK:0x202020, G:0x2e7d32, CU:0xb87333,
+    RD:0xd8264a, VI:0x8a4fc4, OR:0xf08a3c, GY:0xb3b4b0, YG:0xc9cc3a};
+  const wires = [];
+  function wire(a, b, col, circ, via, r){
+    const hex = HEX[col];
+    const em = col==='BK' ? 0x9a9a9a : (col==='W' ? 0xfff6c0 : hex);
+    const flow = dashTex.clone(); flow.needsUpdate = true;
+    const mat = new THREE.MeshStandardMaterial({color:hex, roughness:0.55, metalness: col==='CU'?0.9:0.05, emissive:em, emissiveIntensity:0, emissiveMap:flow});
+    wires.push({a, b, circ, mat, col, hex, em, flow, r: r||0.11, via:(via||[]).map(q=>V(q[0],q[1],q[2])),
+      dyn: T[a].parent===panel || T[b].parent===panel, mesh:null});
+    return wires[wires.length-1];
+  }
+  function wp(name, stub){
+    const t=T[name]; const q=t.p.clone().add(t.n.clone().multiplyScalar(stub));
+    return q.applyMatrix4(t.parent.matrixWorld);
+  }
+  function buildWire(w){
+    const pts=[wp(w.a,0), wp(w.a,0.7), ...w.via, wp(w.b,0.7), wp(w.b,0)];
+    const curve = new THREE.CatmullRomCurve3(pts,false,'centripetal');
+    const geo = new THREE.TubeGeometry(curve, 18*pts.length, w.r, 6, false);
+    w.samples = curve.getPoints(28);
+    w.flow.repeat.x = Math.max(1, Math.round(curve.getLength()/0.9));
+    if (w.mesh){ w.mesh.geometry.dispose(); w.mesh.geometry = geo; }
+    else { w.mesh = new THREE.Mesh(geo, w.mat); w.mesh.castShadow = true; scene.add(w.mesh); }
+  }
+  const y0 = yb;
+  // supply: cord to terminal block, terminal block to contactor line side
+  wire('CORD','TB1L','BK','line',[[-13.4,y0+1.4,8.4],[-13.2,y0+6.5,9.0],[-13.0,y0+8.9,8.5]],0.16);
+  wire('CORD','TB2L','R','line',[[-12.6,y0+1.3,8.5],[-12.0,y0+6.5,9.1],[-11.8,y0+8.9,8.5]],0.16);
+  wire('CORD','TB3L','W','line',[[-11.8,y0+1.2,8.6],[-10.8,y0+6.5,9.2],[-10.6,y0+8.9,8.5]],0.16);
+  wire('CORD','GND','G','none',[[-14.0,y0+1.3,8.6]]);
+  [['TB1','L1',-13.0],['TB2','L2',-11.8],['TB3','L3',-10.6]].forEach((t,i)=>
+    wire(t[0],t[1],'R','line',[[t[2]-0.45,y0+12.0,10.1+i*0.12]],0.14));
+  // control taps: Y off L1, BL off L3, to the motor switch line side
+  wire('L1','MS_Y_IN','Y','line',[[-13.4,y0+12.4,10.6],[-9.4,y0+11.4,10.8]]);
+  wire('L3','MS_BL_IN','BL','line',[[-10.2,y0+12.3,10.5],[-9.2,y0+11.2,10.9]]);
+  // motor switch load side: to fuse bottoms and to cool down MAN contacts
+  wire('MS_BL_OUT','FL_B','BL','ms',[[-9.4,y0+9.8,10.4],[-10.4,y0+0.9,8.8]]);
+  wire('MS_Y_OUT','FR_B','Y','ms',[[-9.1,y0+9.6,10.6],[-8.2,y0+0.9,8.9]]);
+  // cool-down MAN terminals are fed from the fuse block, per print 7404
+  wire('FR_T','CD_MAN1','Y','ms',[[-8.6,y0+7.2,9.7],[-9.0,y0+9.3,10.6]]);
+  wire('FL_T','CD_MAN2','BL','ms',[[-9.9,y0+7.0,9.5],[-9.5,y0+9.5,10.4]]);
+  // fuse tops to door switch N.O., Y branch to contactor coil
+  wire('FL_T','DI_NO_L','BL','ms',[[-9.7,y0+5.6,9.6]]);
+  wire('FR_T','DI_NO_R','Y','ms',[[-8.4,y0+5.4,9.8]]);
+  wire('FR_T','A1','Y','ms',[[-7.95,y0+7.4,8.9],[-7.95,y0+17.6,9.2],[-14.1,y0+17.7,8.6],[-14.25,y0+15.4,8.3]]);
+  // door switch COMs to cool down AUTO contacts; AUTO2 feeds the thermostat
+  wire('DI_COM_R','CD_AUTO1','BK','door',[[-8.1,y0+8.3,11.4],[-9.0,y0+10.6,10.8]]);
+  wire('DI_COM_L','CD_AUTO2','BL','door',[[-8.9,y0+8.1,11.2],[-9.2,y0+10.9,10.6]]);
+  wire('CD_AUTO2','TS_A','BL','door');
+  // motor leads to cool down COMs
+  wire('M_Y','CD_COM1','Y','motor',[[-11.3,y0+9.4,8.0],[-9.6,y0+9.9,10.3]]).tag='oldMotor';
+  wire('M_BL','CD_COM2','BL','motor',[[-10.3,y0+9.2,8.0],[-9.3,y0+9.8,10.5]]).tag='oldMotor';
+  // replacement motor leads
+  const nw = (a,b,col,circ,via,key)=>{ const w=wire(a,b,col,circ,via,0.1); w.tag='new'; w.key=key; };
+  nw('NM_R','CD_COM1','RD','motor',[[-10.3,yc+3.8,7.4],[-9.7,y0+10.3,10.2]],'red');
+  nw('NM_V','CD_COM2','VI','motor',[[-9.8,yc+3.9,7.6],[-9.3,y0+10.1,10.6]],'violet');
+  nw('NM_O','CAP_OR','OR','none',[[-9.9,yc+3.2,8.0]],'orange');
+  nw('NM_G1','CAP_G1','GY','none',[[-9.6,yc+2.6,8.2]],'grays');
+  nw('NM_G2','CAP_G1','GY','none',[[-9.2,yc+2.9,8.3]],'grays');
+  nw('NM_YG','GND2','YG','none',[[-9.6,yc+5.9,4.8],[-8.9,yb+15.9,-0.4],[-8.5,yb+17.5,-1.9]],'yg');
+  // door switch N.C. contacts to the capacitor
+  wire('DI_NC_L','CAP1','O','cap',[[-9.4,y0+7.6,10.6],[-9.6,y0+11.2,8.8],[-9.1,y0+14.1,7.9]]).tag='cap';
+  wire('DI_NC_R','CAP2','O','cap',[[-7.95,y0+7.6,10.9],[-8.0,y0+11.6,8.8],[-8.3,y0+14.1,7.9]]).tag='cap';
+  // thermostat to coil; indicator light across the coil
+  wire('TS_B','A2','BL','coil',[[-9.1,y0+15.6,10.4],[-9.2,y0+14.9,9.2]]);
+  wire('LP_W','A1','W','coil',[[-9.4,y0+13.8,10.6],[-12.8,y0+17.9,9.6],[-14.3,y0+15.9,8.5]]);
+  wire('LP_O','A2','O','coil',[[-9.2,y0+14.2,10.7],[-9.3,y0+14.5,9.1]]);
+  // contactor load side to heaters: pole 1 common to both elements
+  wire('T1','HA2','R','heat',[[-13.0,y0+17.8,10.1],[-8.45,y0+17.7,8.8],[-8.5,y0+17.75,3.0],[-8.8,y0+17.6,0.2]]); // lead 1 to tag 1
+  wire('HA1','HB1','CU','heat',[[-8.55,yb+16.55,2.95]],0.12);
+  wire('T2','HA1','R','heat',[[-11.8,y0+17.6,9.9],[-8.3,y0+17.5,8.6],[-8.25,y0+17.4,5.4]]); // lead 3 to tag 3, the common jumper
+  wire('T3','HB2','R','heat',[[-10.6,y0+17.9,10.3],[-8.65,y0+17.3,8.9],[-8.7,y0+16.0,5.0],[-8.9,y0+16.1,1.8]]); // lead 2 to tag 2
+  // thermostat capillary to the bulb in the cavity
+  wire('TS_CAP','BULB','CU','none',[[-9.0,yt-1.0,10.0],[-7.6,yt-1.5,9.4]],0.06);
+
+  scene.updateMatrixWorld(true);
+  wires.forEach(buildWire);
+
+  /* labels for wiring view */
+  const labelsEl = document.getElementById('labels');
+  const anchors = [
+    ['Terminal block A-B-C', oven, V(-11.8,yb+11.9,8.2)],
+    ['Contactor (Elmwood)', oven, V(-11.8,yb+16.9,8.4)],
+    ['Fuse block 10 A', oven, V(-9.2,yb+5.6,7.2)],
+    ['Door switch, red tape', oven, V(-8.5,yb+7.6,11.2)],
+    ['Door switch, yellow tape', oven, V(-8.5,yb+3.7,11.2)],
+    ['Brake capacitor (125 VAC)', oven, V(-8.7,yb+13.8,7.4), ()=>capPresent()],
+    ['Blower motor', oven, V(-11.8,yc+3.2,3), ()=>swapStep<=3, 'motorOld'],
+    ['FIR motor, caps in the box', oven, V(-11.0,yc+5.8,1.5), ()=>swapStep>=4],
+    ['Chassis ground', oven, V(-14.0,yt-0.7,-11.6), ()=>swapStep>=5],
+    ['Orange capped (low speed)', oven, V(-9.3,yc+3.0,9.8), ()=>swapStep>=5],
+    ['Grays tied together (E.S.)', oven, V(-8.4,yc+0.6,10.1), ()=>swapStep>=5],
+    ['Heaters (2)', oven, V(-3,yc-6.6,4)],
+    ['Element terminals', oven, V(-8.3,yb+17.9,0.2)],
+    ['Jumper (common)', oven, V(-8.4,yb+17.3,3.1)],
+    ['Grounding lug', oven, V(-14.2,yb+2.2,9.5)],
+    ['Thermostat', panel, V(-3.2,16.7,-1)],
+    ['Light (off = oven ready)', panel, V(-3.2,13.5,-1)],
+    ['Motor switch (Blower)', panel, V(-4.8,11.3,-1)],
+    ['Cool down switch', panel, V(-1.6,11.0,-1)]
+  ].map(a=>{ const el=document.createElement('div'); el.className='lab3d'; el.textContent=a[0]; labelsEl.appendChild(el); return {el, parent:a[1], p:a[2], vis:a[3]}; });
+  const tmp = new THREE.Vector3();
+  function placeLabels(){
+    const w=stage.clientWidth, h=stage.clientHeight;
+    anchors.forEach(a=>{
+      tmp.copy(a.p).applyMatrix4(a.parent.matrixWorld).project(camera);
+      if (tmp.z>1 || !state.wiring || (a.vis && !a.vis())){ a.el.style.display='none'; return; }
+      a.el.style.display='block';
+      a.el.style.left=((tmp.x+1)/2*w)+'px'; a.el.style.top=((1-tmp.y)/2*h)+'px';
+    });
+  }
+
+  /* ---------- state + control logic from the schematic ---------- */
+  const state = {door:false, panel:false, blower:false, cool:false, heat:false, wiring:false, built:false, plate:false, swap:false, bench:false, focus:false};
+  let swapStep = 0;
+  const capPresent = () => true;
+  const motorConnected = () => swapStep <= 2 || swapStep >= 5;
+  const STEPS = [
+    {t:'Original motor in place', d:'The old blower motor, with the brake capacitor on the N.C. terminal of each door switch. Open the door and the switches drop the motor and put the cap across its leads.', old:1, cap:1, nw:0, hl:{}},
+    {t:'Leave the brake capacitor alone', d:'Print 7404 draws it on the N.C. terminals of both door switches, so it stays wired exactly as it is and works the same with the new motor. Only replace it if it ohms shorted or looks bulged or leaking.', old:1, cap:1, nw:0, hl:{cap:'new'}},
+    {t:'Disconnect the old motor leads', d:'The two motor leads land on the cool-down switch COM terminals. Tag which lead went to which COM before you pull them, since the new red and violet land in the same two spots.', old:1, cap:1, nw:0, hl:{oldMotor:'rm'}},
+    {t:'Pull the old motor', d:'Unbolt the old motor and pull it off the mount. The wheel shown stays in the cavity for reference.', old:0, cap:1, nw:0, hl:{}},
+    {t:'Set the new FIR motor', d:'Nidec FIR 2799.2492, Blodgett part 59288. 208-240 V, 1/4 HP, 1700/1100 RPM, thermally protected, with both run capacitors inside the terminal box. Leads exit through the grommet in a fiberglass sleeve.', old:0, cap:1, nw:1, hl:{newMotor:'new'}},
+    {t:'Land the leads, per Blodgett L-1243', d:'Red to cool-down COM 1, where the old yellow lead landed. Violet (high speed) to COM 2, where the old blue landed. Yellow/green to the 4888 ground lug on a self-drilling screw. Cap off orange, since this oven is single speed. Join both grays together in one lever nut.', old:0, cap:1, nw:1, hl:{red:'new', violet:'new', yg:'new', orange:'cap', grays:'cap'}},
+    {t:'Run it', d:'Wire-tie the motor leads, then door closed, blower on. Confirm the wheel turns the same way the old one did, then clamp the motor leads. The plate calls for about 1.9 A on high at 208-240 V.', old:0, cap:1, nw:1, hl:{}, run:true}
+  ];
+  const HL = {rm:0xff3b30, new:0x2ecc71, cap:0xffb020};
+  const partMats = {cap:capMats, oldMotor:oldMats, newMotor:newMats, orange:[nutMatO], grays:[nutMatG]};
+  /* ---------- electrical simulation: complex nodal analysis at 60 Hz ---------- */
+  const cx = (re,im)=>({re, im:im||0});
+  const cSub=(a,b)=>cx(a.re-b.re,a.im-b.im);
+  const cMul=(a,b)=>cx(a.re*b.re-a.im*b.im, a.re*b.im+a.im*b.re);
+  const cDiv=(a,b)=>{ const d=b.re*b.re+b.im*b.im; return cx((a.re*b.re+a.im*b.im)/d,(a.im*b.re-a.re*b.im)/d); };
+  const cAbs=a=>Math.hypot(a.re,a.im);
+  const cPol=(m,deg)=>cx(m*Math.cos(deg*Math.PI/180), m*Math.sin(deg*Math.PI/180));
+  const yR=r=>cx(1/r,0), yZ=(r,x)=>cDiv(cx(1,0),cx(r,x));
+  const EL = {
+    service:'240D', breakerA:30, fuseA:10, rWire:0.005, rContact:0.002, rShort:0.001, zSrc:[0.03,0.02], rGroundPath:0.05,
+    heaterR:9.6, zOldMotor:[60,44], zHigh:[88,65], zLow:[104,78], zCoil:[400,1330], rLamp:8650, capUF:53, capV:125,
+    coilPick:0.8, coilDrop:0.5
+  };
+  const RATED = {old:2.8, high:1.9, low:1.6};
+  const vLL = () => EL.service==='240D' ? 240 : 208;
+  const PLATE = {A:12, B:12, C:25};
+  const prot = {breaker:false, bHeat:0, fuseL:false, fuseR:false, fLHeat:0, fRHeat:0, msg:''};
+  const faults = {shorts:[], grounds:[], cuts:new Set()};
+  let SIM = null, contactorClosed = false;
+  const cordNode = {BK:'SRC_A', R:'SRC_B', W:'SRC_C', G:'SRC_G'};
+  const wirePresent = w => w.tag==='cap' ? capPresent() : w.tag==='oldMotor' ? swapStep<=2 : w.tag==='new' ? swapStep>=5 : true;
+  const isConductor = w => w.a!=='TS_CAP';
+  const fmtA = i => i<0.005 ? '0 A' : i<10 ? i.toFixed(2)+' A' : i<1000 ? i.toFixed(1)+' A' : Math.round(i).toLocaleString()+' A';
+  const fmtV = v => v<0.5 ? '0 V' : v.toFixed(1)+' V';
+
+  function network(s, closed, pr){
+    const br=[]; const add=(a,b,y,kind,ref)=>br.push({a,b,y,kind,ref});
+    const ys=yZ(EL.zSrc[0],EL.zSrc[1]);
+    ['A','B','C'].forEach(p=>{ add('U'+p,'B'+p,ys,'src'); if(!pr.breaker) add('B'+p,'SRC_'+p,yR(EL.rContact),'breaker',p); });
+    add('SRC_G','EARTH',yR(EL.rGroundPath),'gpath');
+    add('GND','CHASSIS',yR(EL.rContact),'bond'); add('GND2','CHASSIS',yR(EL.rContact),'bond');
+    wires.forEach((w,i)=>{ if(!isConductor(w) || !wirePresent(w) || faults.cuts.has(i)) return;
+      add(w.a==='CORD' ? cordNode[w.col] : w.a, w.b, yR(EL.rWire), 'wire', i); });
+    [1,2,3].forEach(n=>add('TB'+n+'L','TB'+n,yR(EL.rContact),'strap'));
+    if (closed) [1,2,3].forEach(n=>add('L'+n,'T'+n,yR(EL.rContact),'pole',n));
+    add('A1','A2',yZ(EL.zCoil[0],EL.zCoil[1]),'coil');
+    if (!pr.fuseL) add('FL_B','FL_T',yR(0.01),'fuse','L');
+    if (!pr.fuseR) add('FR_B','FR_T',yR(0.01),'fuse','R');
+    if (s.blower){ add('MS_BL_IN','MS_BL_OUT',yR(EL.rContact),'sw'); add('MS_Y_IN','MS_Y_OUT',yR(EL.rContact),'sw'); }
+    const dc = !s.door;
+    add('DI_COM_L', dc?'DI_NO_L':'DI_NC_L', yR(EL.rContact),'sw'); add('DI_COM_R', dc?'DI_NO_R':'DI_NC_R', yR(EL.rContact),'sw');
+    add('CD_COM1', s.cool?'CD_MAN1':'CD_AUTO1', yR(EL.rContact),'sw'); add('CD_COM2', s.cool?'CD_MAN2':'CD_AUTO2', yR(EL.rContact),'sw');
+    if (s.heat) add('TS_A','TS_B',yR(EL.rContact),'sw');
+    add('LP_W','LP_O',yR(EL.rLamp),'lamp');
+    add('HA1','HA2',yR(EL.heaterR),'heater','A'); add('HB1','HB2',yR(EL.heaterR),'heater','B');
+    if (swapStep<=2) add('M_Y','M_BL',yZ(EL.zOldMotor[0],EL.zOldMotor[1]),'motor','old');
+    if (swapStep>=4){ add('NM_R','NM_V',yZ(EL.zHigh[0],EL.zHigh[1]),'motor','high'); add('NM_R','NM_O',yZ(EL.zLow[0],EL.zLow[1]),'motor','low'); add('NM_YG','CHASSIS',yR(EL.rContact),'bond'); }
+    if (capPresent()) add('CAP1','CAP2',cx(0,2*Math.PI*60*EL.capUF*1e-6),'cap');
+    faults.shorts.forEach(f=>add(f[0],f[1],yR(EL.rShort),'fault'));
+    faults.grounds.forEach(g=>add(g,'CHASSIS',yR(EL.rShort),'fault'));
+    return br;
+  }
+  function solveNet(br){
+    const fixed = EL.service==='240D'
+      ? {UA:cPol(120,0), UB:cPol(207.85,90), UC:cPol(120,180), EARTH:cx(0,0)}   // 240 V delta, center-tapped A-C winding grounded, B is the high leg
+      : {UA:cPol(120,0), UB:cPol(120,-120), UC:cPol(120,120), EARTH:cx(0,0)};
+    const idx={}; let n=0;
+    br.forEach(b=>[b.a,b.b].forEach(q=>{ if(!(q in fixed) && !(q in idx)) idx[q]=n++; }));
+    const Ar=[], Ai=[], br_=new Float64Array(n), bi=new Float64Array(n);
+    for (let i=0;i<n;i++){ Ar.push(new Float64Array(n)); Ai.push(new Float64Array(n)); Ar[i][i]=1e-7; } // 10 MΩ to earth on every node, like a meter
+    br.forEach(b=>{
+      const ia=idx[b.a], ib=idx[b.b], y=b.y;
+      if (ia!==undefined){ Ar[ia][ia]+=y.re; Ai[ia][ia]+=y.im;
+        if (ib!==undefined){ Ar[ia][ib]-=y.re; Ai[ia][ib]-=y.im; } else { const v=cMul(y,fixed[b.b]); br_[ia]+=v.re; bi[ia]+=v.im; } }
+      if (ib!==undefined){ Ar[ib][ib]+=y.re; Ai[ib][ib]+=y.im;
+        if (ia!==undefined){ Ar[ib][ia]-=y.re; Ai[ib][ia]-=y.im; } else { const v=cMul(y,fixed[b.a]); br_[ib]+=v.re; bi[ib]+=v.im; } }
+    });
+    for (let k=0;k<n;k++){
+      let p=k, best=0;
+      for (let i=k;i<n;i++){ const m=Ar[i][k]*Ar[i][k]+Ai[i][k]*Ai[i][k]; if (m>best){ best=m; p=i; } }
+      if (best===0) continue;
+      if (p!==k){ [Ar[p],Ar[k]]=[Ar[k],Ar[p]]; [Ai[p],Ai[k]]=[Ai[k],Ai[p]]; let t=br_[p]; br_[p]=br_[k]; br_[k]=t; t=bi[p]; bi[p]=bi[k]; bi[k]=t; }
+      const pr=Ar[k][k], pi=Ai[k][k], d=pr*pr+pi*pi;
+      for (let i=k+1;i<n;i++){
+        const ar=Ar[i][k], ai=Ai[i][k]; if (ar===0 && ai===0) continue;
+        const fr=(ar*pr+ai*pi)/d, fi=(ai*pr-ar*pi)/d, Rk=Ar[k], Ik=Ai[k], Ri=Ar[i], Ii=Ai[i];
+        for (let j=k;j<n;j++){ Ri[j]-=fr*Rk[j]-fi*Ik[j]; Ii[j]-=fr*Ik[j]+fi*Rk[j]; }
+        br_[i]-=fr*br_[k]-fi*bi[k]; bi[i]-=fr*bi[k]+fi*br_[k];
+      }
+    }
+    const xr=new Float64Array(n), xi=new Float64Array(n);
+    for (let i=n-1;i>=0;i--){
+      let sr=br_[i], si=bi[i];
+      for (let j=i+1;j<n;j++){ sr-=Ar[i][j]*xr[j]-Ai[i][j]*xi[j]; si-=Ar[i][j]*xi[j]+Ai[i][j]*xr[j]; }
+      const pr=Ar[i][i], pi=Ai[i][i], d=(pr*pr+pi*pi)||1e-30;
+      xr[i]=(sr*pr+si*pi)/d; xi[i]=(si*pr-sr*pi)/d;
+    }
+    return q => q in fixed ? fixed[q] : (idx[q]!==undefined ? cx(xr[idx[q]],xi[idx[q]]) : null);
+  }
+  // metallic trace from the capacitor's two leads through closed contacts, wires and straps
+  function capTie(s, pr){
+    const br = network(s, false, pr || prot);
+    const adj = {}; const link = (a,b)=>{ (adj[a]=adj[a]||[]).push(b); (adj[b]=adj[b]||[]).push(a); };
+    br.forEach(b=>{ if (b.kind==='wire' || b.kind==='sw' || b.kind==='strap' || b.kind==='fuse' || b.kind==='pole') link(b.a, b.b); });
+    const reach = starts => { const seen = new Set(starts), q = starts.slice(); while (q.length){ const n = q.pop(); (adj[n]||[]).forEach(m=>{ if (!seen.has(m)){ seen.add(m); q.push(m); } }); } return seen; };
+    const fromCap = reach(['CAP1','CAP2']), fromLine = reach(['SRC_A','SRC_B','SRC_C']);
+    const shared = []; fromCap.forEach(n=>{ if (fromLine.has(n)) shared.push(n); });
+    return {motor: fromCap.has('CD_COM1') && fromCap.has('CD_COM2'), live: shared.length>0, shared, nodes:[...fromCap]};
+  }
+  function evaluate(s, pr, closed){
+    let br, V, vc=0;
+    for (let k=0;k<6;k++){
+      br = network(s, closed, pr); V = solveNet(br);
+      const a1=V('A1'), a2=V('A2'); vc = (a1 && a2) ? cAbs(cSub(a1,a2)) : 0;
+      const want = closed ? vc > EL.coilDrop*vLL() : vc > EL.coilPick*vLL();
+      if (want===closed) break; closed = want;
+    }
+    const r = {V, closed, vCoil:vc, wireI:{}, wireDir:{}, line:{A:0,B:0,C:0}, fuse:{L:0,R:0}, motorI:0, motorKind:null, heaterP:0, heaterI:{A:0,B:0}, capV:0, lampV:0, faultI:0, faultAt:null};
+    br.forEach(b=>{
+      const va=V(b.a), vb=V(b.b); const Ic = (va && vb) ? cMul(cSub(va,vb),b.y) : cx(0,0), I = cAbs(Ic);
+      if (b.kind==='wire'){ r.wireI[b.ref]=I; r.wireDir[b.ref] = Ic.re >= 0 ? 1 : -1; }
+      else if (b.kind==='breaker') r.line[b.ref]=I;
+      else if (b.kind==='fuse') r.fuse[b.ref]=I;
+      else if (b.kind==='motor'){ if (b.ref!=='low' || I>r.motorI){ if (I>=r.motorI){ r.motorI=I; r.motorKind=b.ref; } } }
+      else if (b.kind==='heater'){ r.heaterI[b.ref]=I; r.heaterP+=I*I*EL.heaterR; }
+      else if (b.kind==='cap') r.capV = I/cAbs(b.y);
+      else if (b.kind==='lamp') r.lampV = I*EL.rLamp;
+      else if (b.kind==='fault' && I>r.faultI){ r.faultI=I; r.faultAt=b.a; }
+    });
+    const ch=V('CHASSIS'); r.chassisV = ch ? cAbs(ch) : 0;
+    return r;
+  }
+  const vBetween = (r,a,b)=>{ const va=r.V(a), vb=r.V(b); return (va && vb) ? cAbs(cSub(va,vb)) : null; };
+  function simulate(){ SIM = evaluate(state, prot, contactorClosed); contactorClosed = SIM.closed; SIM.tie = capTie(state, prot); }
+  function motorRunning(){ return SIM && SIM.motorKind && SIM.motorI > 0.5*RATED[SIM.motorKind]; }
+
+  // breaker and fuses: instantaneous on faults, inverse-time on overloads
+  let flashT = 0, flashPos = null;
+  function protect(dt){
+    if (!SIM) return false;
+    let changed = false;
+    [['L','fuseL','fLHeat','1'],['R','fuseR','fRHeat','2']].forEach(f=>{
+      if (prot[f[1]]) return;
+      const i = SIM.fuse[f[0]], r = i/EL.fuseA;
+      if (r>6){ prot[f[1]]=true; changed=true; prot.msg='Fuse '+f[3]+' blew on a '+fmtA(i)+' fault'; return; }
+      prot[f[2]] = r>1.1 ? prot[f[2]]+dt*(r*r-1)/2 : Math.max(0, prot[f[2]]-dt*0.2);
+      if (prot[f[2]]>=1){ prot[f[1]]=true; changed=true; prot.msg='Fuse '+f[3]+' blew on overload at '+fmtA(i); }
+    });
+    if (changed){ simulate(); }
+    if (!prot.breaker){
+      const m = Math.max(SIM.line.A, SIM.line.B, SIM.line.C), r = m/EL.breakerA;
+      if (r>10){ prot.breaker=true; changed=true; prot.msg='Breaker tripped instantly on '+fmtA(m)+' of fault current'; }
+      else {
+        prot.bHeat = r>1.13 ? prot.bHeat+dt*(r*r-1)/60 : Math.max(0, prot.bHeat-dt*0.05);
+        if (prot.bHeat>=1){ prot.breaker=true; changed=true; prot.msg='Breaker tripped on overload at '+fmtA(m); }
+      }
+    }
+    if (changed && SIM.faultAt && T[SIM.faultAt]){ flashT = 0.45; flashPos = wp(SIM.faultAt,0.2); }
+    return changed;
+  }
+
+  // wiring check: runs the oven through its states against the solver
+  function runChecks(){
+    const P = {breaker:false, fuseL:false, fuseR:false};
+    const ev = o => evaluate(Object.assign({}, state, {door:false, cool:false, blower:false, heat:false}, o), P, false);
+    const out = []; const push = (ok,t,d)=>out.push({ok,t,d});
+    const within = (v,t,tol)=>Math.abs(v-t)<=t*tol;
+    const com = r => vBetween(r,'CD_COM1','CD_COM2') || 0;
+    let r = ev({});
+    push(com(r)<5, 'Blower off: no voltage across cool-down COM', fmtV(com(r)));
+    r = ev({blower:true});
+    push(com(r)>vLL()*0.9 && com(r)<vLL()*1.1, 'Blower on, door closed, Auto: '+vLL()+' V across cool-down COM', fmtV(com(r)));
+    if (motorConnected() && r.motorKind){ const rated=RATED[r.motorKind]; push(within(r.motorI,rated,0.3), 'Motor draws its plate current ('+rated+' A)', fmtA(r.motorI)); }
+    else push(false, 'Motor draws its plate current', 'No motor landed on the cool-down COM terminals');
+    r = ev({blower:true, door:true});
+    push(com(r)<5, 'Door open in Auto: motor drops out', fmtV(com(r)));
+    r = ev({blower:true, door:true, cool:true});
+    push(com(r)>vLL()*0.9 && com(r)<vLL()*1.1, 'Door open in Manual: motor keeps running', fmtV(com(r)));
+    r = ev({blower:true, heat:true});
+    push(r.closed, 'Heat call with blower on and door closed: contactor pulls in', 'Coil '+fmtV(r.vCoil));
+    ['A','B','C'].forEach((p,i)=>push(within(r.line[p],PLATE[p],0.15), 'Line '+(i+1)+' heating current vs the plate ('+PLATE[p]+' A)', fmtA(r.line[p])));
+    const heavy = Math.max(r.line.A, r.line.B, r.line.C);
+    push(heavy <= EL.breakerA, 'Heating load stays under the '+EL.breakerA+' A breaker', fmtA(heavy)+' on the heaviest line');
+    push(within(r.heaterP, 9000, 0.1), 'Element power matches the 9.0 kW plate', (r.heaterP/1000).toFixed(2)+' kW at '+EL.heaterR+' Ω per element');
+    r = ev({heat:true});
+    push(!r.closed, 'Heat call with blower off: contactor stays out', 'Coil '+fmtV(r.vCoil));
+    r = ev({blower:true, heat:true, door:true});
+    push(!r.closed, 'Heat call with door open: contactor stays out', 'Coil '+fmtV(r.vCoil));
+    r = ev({blower:true, door:true}); push(r.capV<=EL.capV, 'Brake capacitor stays inside its 125 VAC rating', fmtV(r.capV));
+    let worst = 0; [{},{blower:true},{blower:true,heat:true}].forEach(o=>{ worst=Math.max(worst, ev(o).chassisV); });
+    push(worst<2, 'Chassis stays at ground potential', fmtV(worst));
+    // brake capacitor: on both door switches' N.C. terminals
+    const capY = 2*Math.PI*60*EL.capUF*1e-6, tie = o => capTie(Object.assign({}, state, {door:false, cool:false, blower:false, heat:false}, o), P);
+    const yn = b => b ? 'yes' : 'no';
+    let t = tie({blower:true}); r = ev({blower:true});
+    push(!t.motor && !t.live && r.capV<1, 'Door closed: brake cap is off the motor and off the line', 'Reaches motor: '+yn(t.motor)+', reaches line: '+yn(t.live)+', '+fmtV(r.capV)+' across it, '+fmtA(r.capV*capY));
+    t = tie({blower:true, door:true}); r = ev({blower:true, door:true});
+    push(t.motor && !t.live && r.capV<1, 'Door open in Auto: brake cap is across the motor leads and tied to nothing live', 'Reaches motor: '+yn(t.motor)+', reaches line: '+yn(t.live)+', '+fmtV(r.capV)+' across it, '+fmtA(r.capV*capY));
+    t = tie({blower:true, door:true, cool:true});
+    push(!t.motor && !t.live, 'Door open in Manual: brake cap stays off the motor', 'Reaches motor: '+yn(t.motor)+', reaches line: '+yn(t.live));
+    r = ev({blower:true, door:true}); const lineOpen = Math.max(r.line.A, r.line.B, r.line.C);
+    push(lineOpen < 0.05, 'Door open in Auto: nothing draws from the line, so the cap is not a short', fmtA(lineOpen)+' on the heaviest line');
+    const capW = wires.filter(w=>w.a==='DI_NC_L' || w.a==='DI_NC_R'), savedA = capW.map(w=>w.a);
+    capW.forEach(w=>{ w.a = w.a==='DI_NC_L' ? 'DI_NO_L' : 'DI_NO_R'; });
+    r = ev({blower:true}); const badV = r.capV;
+    capW.forEach((w,i)=>{ w.a = savedA[i]; });
+    push(badV > EL.capV, 'Self-test: cap leads moved to N.O. would put line voltage on it, and this checker catches that', fmtV(badV)+' across the cap, '+fmtA(badV*capY)+' through it');
+    const keepS = faults.shorts, keepG = faults.grounds;
+    faults.shorts = [['TB1','TB2']]; r = ev({}); faults.shorts = keepS;
+    let f = Math.max(r.line.A, r.line.B, r.line.C);
+    push(f > 10*EL.breakerA, 'Bolted short A to B at the terminal block trips the breaker instantly', fmtA(f)+' available');
+    faults.grounds = ['TB1']; r = ev({}); faults.grounds = keepG;
+    f = Math.max(r.line.A, r.line.B, r.line.C);
+    push(f > 10*EL.breakerA, 'Line A to chassis trips the breaker instantly', fmtA(f)+' available');
+    faults.shorts = [['FL_T','FR_T']]; r = ev({blower:true}); faults.shorts = keepS;
+    f = Math.max(r.fuse.L, r.fuse.R);
+    push(f > 6*EL.fuseA, 'Control-circuit short clears the 10 A fuses', fmtA(f)+' through the fuses');
+    return out;
+  }
+
+  const cur = {door:0, panel:0, speed:0, heat:0, toggle:0.4, rocker:0.18, old:1, cap:1, nw:0};
+  function logic(s){
+    if (!SIM) simulate();
+    return {motor: motorRunning(), cap: !!(SIM.tie && SIM.tie.motor && !SIM.tie.live), coil: SIM.closed};
+  }
+  const labels = {door:['Open door','Close door'], panel:['Open control panel','Close control panel'],
+    blower:['Turn blower on','Turn blower off'], cool:['Cool down: Auto','Cool down: Manual'],
+    heat:['Call for heat','End heat call'], wiring:['Show wiring','Hide wiring'], built:['Show as-built wire colors','Show print wire colors'], plate:['Show data plate','Hide data plate'], swap:['Motor swap','Exit motor swap'], bench:['Test bench','Close test bench'], focus:['Focus','Close focus']};
+  const btn = {door:bDoor, panel:bPanel, blower:bBlower, cool:bCool, heat:bHeat, wiring:bWire, built:bBuilt, plate:bPlate, swap:bSwap, bench:bBench, focus:bFocus};
+  const plateEl = document.getElementById('plate'), statusEl = document.getElementById('status');
+  function statusText(){
+    const S = SIM, warn = [];
+    let m;
+    if (!motorConnected()) m = 'No blower motor landed';
+    else if (motorRunning()) m = 'Blower running at '+fmtA(S.motorI);
+    else if (!state.blower) m = 'Blower off';
+    else if (state.door && !state.cool) m = 'Blower stopped, door open in Auto';
+    else m = 'Blower has no power';
+    if (S.tie && S.tie.motor && !S.tie.live && motorConnected() && !motorRunning()) m += ', brake cap across the motor leads';
+    const h = S.closed ? 'Contactor in, elements at '+(S.heaterP/1000).toFixed(1)+' kW' : state.heat ? 'Heat called, contactor out' : 'Thermostat satisfied';
+    if (prot.fuseL || prot.fuseR) warn.push('Fuse '+[prot.fuseL?'1':'',prot.fuseR?'2':''].filter(Boolean).join(' and ')+' blown');
+    if (S.chassisV > 30) warn.push('CHASSIS ENERGIZED at '+fmtV(S.chassisV));
+    if (capPresent() && S.capV > EL.capV) warn.push('Capacitor at '+fmtV(S.capV)+', over its 125 V rating');
+    if (!prot.breaker && prot.bHeat > 0.02) warn.push('Breaker overloaded, heating toward a trip');
+    const head = (prot.breaker ? 'Breaker TRIPPED' : 'Breaker on')+'. Lines '+fmtA(S.line.A)+' / '+fmtA(S.line.B)+' / '+fmtA(S.line.C)+'.';
+    statusEl.innerHTML = '<b>'+head+'</b> '+m+'. '+h+'.'+(warn.length ? ' <b>'+warn.join('. ')+'.</b>' : '')+(prot.msg ? ' '+prot.msg+'.' : '');
+    statusEl.style.setProperty('--state', prot.breaker || warn.length ? '#d7261e' : S.closed ? '#e0561f' : motorRunning() ? '#2f6fd6' : '#7a848c');
+    if (typeof benchHead !== 'undefined') benchHead.textContent = prot.breaker ? 'Breaker tripped' : (prot.fuseL || prot.fuseR) ? 'Breaker on, fuse blown' : 'Breaker on';
+  }
+  function setXray(on){
+    shellMats.forEach(m=>{ m.transparent=on; m.opacity=on?0.13:1; m.depthWrite=!on; m.needsUpdate=true; });
+    fill.intensity = on ? 0.9 : 0;
+  }
+  function sync(){
+    Object.keys(btn).forEach(k=>{ btn[k].textContent = labels[k][state[k]?1:0]; btn[k].setAttribute('aria-pressed', String(state[k])); });
+    plateEl.hidden = !state.plate;
+    simulate();
+    const cordRun = w => w.a==='CORD';
+    wires.forEach(w=>{ w.mat.color.setHex(state.built && !cordRun(w) && w.col!=='CU' && w.tag!=='new' ? 0xc9b08a : w.hex); });
+    swapEl.hidden = !state.swap; benchEl.hidden = !state.bench; focusEl.hidden = !state.focus;
+    document.body.classList.toggle('swapping', state.swap || state.bench);
+    if (state.swap || state.bench) plateEl.hidden = true;
+    statusText();
+  }
+  const swapEl = document.getElementById('swap'), benchEl = document.getElementById('bench'), focusEl = document.getElementById('focus');
+  /* ---------- focus: isolate one system and everything wired to it ---------- */
+  const SYS = [
+    {id:'motor', name:'Blower motor', boxes:[['oven',-14.6,-6.0,yc-4.5,yc+5.3,-2.5,6.0],['oven',-10.5,-9.4,yc+0.5,yc+4.2,5.9,7.5],['oven',-9.8,-7.8,yc+0.8,yc+3.0,9.0,10.2]]},
+    {id:'door', name:'Door switches', boxes:[['oven',-9.6,-5.5,yb+3.0,yb+8.0,9.5,13.3]]},
+    {id:'contactor', name:'Contactor', boxes:[['oven',-14.2,-9.5,yb+12.2,yb+17.2,6.0,10.0]]},
+    {id:'fuse', name:'Fuse block', boxes:[['oven',-10.6,-7.8,yb+1.0,yb+5.6,6.3,8.2]]},
+    {id:'supply', name:'Terminal block and cord', boxes:[['oven',-14.0,-10.0,yb+9.3,yb+12.0,6.5,8.6],['oven',-14.6,-13.7,yb+1.0,yb+2.6,9.0,10.2],['oven',-14.0,-13.0,yb+0.4,yb+1.4,6.5,7.5]]},
+    {id:'cap', name:'Brake capacitor', boxes:[['oven',-9.7,-7.7,yb+10.6,yb+13.7,6.5,8.3]]},
+    {id:'cooldown', name:'Cool-down switch', boxes:[['panel',-2.7,-0.9,8.4,11.0,-2.2,1.4]]},
+    {id:'blowersw', name:'Blower switch', boxes:[['panel',-5.6,-3.9,9.0,11.5,-2.2,1.4]]},
+    {id:'tstat', name:'Thermostat and light', boxes:[['panel',-4.6,-1.8,12.0,17.2,-2.2,2.2],['oven',-4.0,0.0,yt-2.5,yt-1.0,8.0,10.5]]},
+    {id:'heaters', name:'Heating elements', boxes:[['oven',-8.6,-7.4,yb+15.2,yb+17.8,-1.6,4.4]], mat:elementMat}
+  ];
+  const inBox = (bx,p) => p.x>=bx[1]&&p.x<=bx[2]&&p.y>=bx[3]&&p.y<=bx[4]&&p.z>=bx[5]&&p.z<=bx[6];
+  const localOf = (obj) => { const inPanel = (()=>{ let o=obj; while(o){ if(o===panel) return true; o=o.parent; } return false; })();
+    if (inPanel){ const v=new THREE.Vector3(); obj.getWorldPosition(v); return {space:'panel', p:panel.worldToLocal(v)}; }
+    const v=new THREE.Vector3(); obj.getWorldPosition(v); return {space:'oven', p:v}; };
+  const sysOfPoint = (space,p,mesh) => SYS.find(sy => (sy.mat && mesh && mesh.material===sy.mat) || sy.boxes.some(bx => bx[0]===space && inBox(bx,p)));
+  scene.updateMatrixWorld(true);
+  const focusMeshes = []; // every mesh that focus mode can hide
+  [oven, stand].forEach(root=>root.traverse(o=>{ if (o.isMesh){ const l=localOf(o); const sy=sysOfPoint(l.space,l.p,o); focusMeshes.push({m:o, sys: sy ? sy.id : null}); } }));
+  const termSys = {};
+  Object.keys(T).forEach(n=>{ const t=T[n]; const space = t.parent===panel ? 'panel' : 'oven'; const sy = sysOfPoint(space,t.p,null); termSys[n] = sy ? sy.id : null; });
+  let focusId = null, focusWires = new Set();
+  function setFocus(id, keepCam){
+    focusId = id;
+    focusList.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed', String((b.dataset.sys||'')===(id||''))));
+    focusWires = new Set();
+    if (!id){ focusMeshes.forEach(f=>{ f.m.visible = true; }); return; }
+    const keep = new Set([id]);
+    wires.forEach((w,i)=>{ if (!isConductor(w) || !wirePresent(w)) return;
+      const sa = w.a==='CORD' ? 'supply' : termSys[w.a], sb = termSys[w.b];
+      if (sa===id || sb===id){ focusWires.add(i); if (sa) keep.add(sa); if (sb) keep.add(sb); } });
+    const box = new THREE.Box3();
+    focusMeshes.forEach(f=>{ f.m.visible = !!(f.sys && keep.has(f.sys)); if (f.sys===id) box.expandByObject(f.m); });
+    wires.forEach((w,i)=>{ if (focusWires.has(i) && w.samples) w.samples.forEach(p=>box.expandByPoint(p)); });
+    if (box.isEmpty() || keepCam) return;
+    const c = box.getCenter(new THREE.Vector3()), size = box.getSize(new THREE.Vector3()).length();
+    const aspect = stage.clientWidth/Math.max(1,stage.clientHeight);
+    const dist = Math.max(14, size/(2*Math.tan(camera.fov*Math.PI/360)) * (aspect<0.9 ? 1.5 : 1.1));
+    controls.target.copy(c);
+    camera.position.copy(c).add(new THREE.Vector3(-0.85, 0.5, 1.0).normalize().multiplyScalar(dist));
+    controls.update();
+  }
+  SYS.forEach(sy=>{ const b=document.createElement('button'); b.textContent=sy.name; b.dataset.sys=sy.id; b.setAttribute('aria-pressed','false'); b.addEventListener('click',()=>setFocus(sy.id)); focusList.appendChild(b); });
+  (()=>{ const b=document.createElement('button'); b.textContent='Everything'; b.dataset.sys=''; b.setAttribute('aria-pressed','true'); b.addEventListener('click',()=>{ setFocus(null); resetView(); }); focusList.appendChild(b); })();
+
+  function frameCompartment(){
+    const aspect = stage.clientWidth/Math.max(1,stage.clientHeight);
+    const d = aspect < 0.8 ? 1.6 : aspect < 1.2 ? 1.25 : 1;
+    controls.target.set(-11, yc+1.5, 4);
+    camera.position.set(-11 - 30*d, yc + 16*d, 4 + 34*d);
+    controls.update();
+  }
+  function applyStep(i){
+    swapStep = Math.max(0, Math.min(STEPS.length-1, i));
+    const st = STEPS[swapStep];
+    swapCount.textContent = 'Step '+(swapStep+1)+' of '+STEPS.length;
+    swapTitle.textContent = st.t; swapText.textContent = st.d;
+    swapBack.disabled = swapStep === 0;
+    swapNext.textContent = swapStep === STEPS.length-1 ? 'Start over' : 'Next';
+    state.blower = !!st.run; if (st.run){ state.door = false; state.cool = false; }
+    sync();
+    if (focusId) setFocus(focusId, true);
+  }
+  swapBack.addEventListener('click', ()=>applyStep(swapStep-1));
+  swapNext.addEventListener('click', ()=>applyStep(swapStep === STEPS.length-1 ? 0 : swapStep+1));
+  function set(k, v){
+    state[k] = v;
+    if (k==='bench' && v){ state.swap = false; state.wiring = true; setXray(true); state.panel = true; state.plate = false; if (!focusId) frameCompartment(); }
+    if (k==='focus' && v){ state.wiring = true; setXray(true); state.panel = true; }
+    if (k==='bench' && !v) setTool('operate');
+    if (k==='swap' && v){ state.bench = false; setTool('operate'); state.wiring = true; setXray(true); state.panel = true; state.door = false; state.plate = false; applyStep(swapStep); setFocus('motor'); return; }
+    if (k==='swap' && !v){ setFocus(null); resetView(); }
+    if (k==='wiring'){ setXray(v); if (v) state.panel = true; }
+    sync();
+  }
+  Object.keys(btn).forEach(k=>btn[k].addEventListener('click',()=>set(k,!state[k])));
+
+
+  /* ---------- test bench tools ---------- */
+  const NAMES = {TB1L:'Terminal block A, cord side', TB2L:'Terminal block B, cord side', TB3L:'Terminal block C, cord side',
+    TB1:'Terminal block A, load side', TB2:'Terminal block B, load side', TB3:'Terminal block C, load side',
+    L1:'Contactor L1', L2:'Contactor L2', L3:'Contactor L3', T1:'Contactor T1 (lead 1)', T2:'Contactor T2 (lead 3)', T3:'Contactor T3 (lead 2)',
+    A1:'Contactor coil A1', A2:'Contactor coil A2', FL_B:'Fuse 1 bottom', FL_T:'Fuse 1 top', FR_B:'Fuse 2 bottom', FR_T:'Fuse 2 top',
+    DI_COM_L:'Red-tape door switch COM', DI_NO_L:'Red-tape door switch N.O.', DI_NC_L:'Red-tape door switch N.C.',
+    DI_COM_R:'Yellow-tape door switch COM', DI_NO_R:'Yellow-tape door switch N.O.', DI_NC_R:'Yellow-tape door switch N.C.',
+    CD_COM1:'Cool-down COM 1', CD_AUTO1:'Cool-down AUTO 1', CD_MAN1:'Cool-down MAN 1', CD_COM2:'Cool-down COM 2', CD_AUTO2:'Cool-down AUTO 2', CD_MAN2:'Cool-down MAN 2',
+    MS_Y_IN:'Blower switch line, pole 1', MS_Y_OUT:'Blower switch load, pole 1', MS_BL_IN:'Blower switch line, pole 2', MS_BL_OUT:'Blower switch load, pole 2',
+    TS_A:'Thermostat terminal A', TS_B:'Thermostat terminal B', LP_W:'Indicator light', LP_O:'Indicator light',
+    HA1:'Element jumper, tag 3', HA2:'Element stud, tag 1', HB1:'Element jumper, tag 3', HB2:'Element stud, tag 2',
+    M_Y:'Old motor lead (Y)', M_BL:'Old motor lead (BL)', CAP1:'Brake cap lead', CAP2:'Brake cap lead',
+    NM_R:'New motor red', NM_V:'New motor violet', NM_O:'New motor orange', NM_G1:'New motor gray', NM_G2:'New motor gray', NM_YG:'New motor yellow/green',
+    GND:'Cord ground lug', GND2:'Chassis ground screw', CAP_OR:'Orange, capped', CAP_G1:'Gray-to-gray lever nut'};
+  const cordName = {BK:'Cord black', R:'Cord red', W:'Cord white', G:'Cord green'};
+  const tname = n => NAMES[n] || n;
+  const wname = w => (w.a==='CORD' ? cordName[w.col] : tname(w.a))+' to '+tname(w.b);
+  const HINTS = {operate:'Tap the door or control panel to open it. Switches are on the button bar below.',
+    volt:'Tap two terminals: red probe first, then black. The reading follows the oven live as you flip switches.',
+    clamp:'Tap any wire to clamp it. The reading stays live.',
+    short:'Tap two terminals to jumper them with a dead short.',
+    ground:'Tap a terminal to bond it straight to the chassis.',
+    cut:'Tap a wire to open it. Tap it again to put it back.'};
+  let tool = 'operate', probes = [], clampWire = null, pendingShort = null, readT = 0;
+  const markerGeo = new THREE.SphereGeometry(0.2,12,8);
+  const markerMat = new THREE.MeshBasicMaterial({color:0xffc400, transparent:true, opacity:0.85, depthTest:false});
+  const pendMat = new THREE.MeshBasicMaterial({color:0xff7a00, depthTest:false});
+  const termMarkers = {};
+  Object.keys(T).forEach(n=>{
+    if (n==='CORD' || n==='TS_CAP' || n==='BULB') return;
+    const m = new THREE.Mesh(markerGeo, markerMat); m.renderOrder = 10; m.visible = false;
+    m.position.copy(T[n].p).add(T[n].n.clone().multiplyScalar(0.18)); T[n].parent.add(m); termMarkers[n] = m;
+  });
+  const termAvailable = n => n.startsWith('M_') ? swapStep<=2 : (n==='CAP1'||n==='CAP2') ? capPresent() : (n.startsWith('NM_')||n.startsWith('CAP_')) ? swapStep>=5 : true;
+  const probeMeshes = [0xe0241b, 0x111111].map(c=>{ const m=new THREE.Mesh(new THREE.SphereGeometry(0.34,14,10), new THREE.MeshBasicMaterial({color:c, depthTest:false})); m.renderOrder=11; m.visible=false; scene.add(m); return m; });
+  const clampMesh = new THREE.Mesh(new THREE.TorusGeometry(0.55,0.12,8,24), new THREE.MeshBasicMaterial({color:0xffc400, depthTest:false})); clampMesh.renderOrder=11; clampMesh.visible=false; scene.add(clampMesh);
+  const faultMat = new THREE.MeshStandardMaterial({color:0x111111, emissive:0xff2a1a, emissiveIntensity:0.9});
+  const gfMat = new THREE.MeshStandardMaterial({color:0x2e7d32, emissive:0xff2a1a, emissiveIntensity:0.6});
+  const faultBars = [];
+  const barGeo = new THREE.CylinderGeometry(0.09,0.09,1,8);
+  function placeBar(m, p1, p2){ const d=p2.clone().sub(p1); m.position.copy(p1).add(d.clone().multiplyScalar(0.5)); m.scale.set(1, Math.max(0.01,d.length()), 1); m.quaternion.setFromUnitVectors(UP, d.normalize()); }
+  function addBar(a, b, mat){ const m=new THREE.Mesh(barGeo, mat); scene.add(m); faultBars.push({m, a, b}); }
+  const flash = new THREE.PointLight(0xcfe6ff, 0, 18, 2); scene.add(flash);
+  const screenPos = v => { const p=v.clone().project(camera); return {x:(p.x+1)/2*stage.clientWidth, y:(1-p.y)/2*stage.clientHeight, z:p.z}; };
+  function pickTerm(px, py){
+    let best=null, bd=28;
+    Object.keys(termMarkers).forEach(n=>{ if (!termAvailable(n)) return; const q=screenPos(wp(n,0.18)); if (q.z>1) return; const d=Math.hypot(q.x-px,q.y-py); if (d<bd){ bd=d; best=n; } });
+    return best;
+  }
+  function pickWire(px, py){
+    let best=null, bd=24;
+    wires.forEach((w,i)=>{ if (!isConductor(w) || !wirePresent(w) || !w.samples) return;
+      w.samples.forEach(p=>{ const q=screenPos(p); if (q.z>1) return; const d=Math.hypot(q.x-px,q.y-py); if (d<bd){ bd=d; best=i; } }); });
+    return best;
+  }
+  function setTool(t){
+    tool = t; pendingShort = null;
+    benchEl.querySelectorAll('[data-tool]').forEach(b=>b.setAttribute('aria-pressed', String(b.dataset.tool===t)));
+    benchHint.textContent = HINTS[t];
+    if (t!=='volt'){ probes = []; } if (t!=='clamp') clampWire = null;
+    updateReading();
+  }
+  benchEl.querySelectorAll('[data-tool]').forEach(b=>b.addEventListener('click', ()=>setTool(b.dataset.tool)));
+  function useTool(px, py){
+    if (tool==='volt'){
+      const n = pickTerm(px, py); if (!n) return;
+      if (probes.length>=2) probes = []; probes.push(n); updateReading();
+    } else if (tool==='clamp'){
+      const i = pickWire(px, py); if (i===null) return; clampWire = i; updateReading();
+    } else if (tool==='short'){
+      const n = pickTerm(px, py); if (!n) return;
+      if (!pendingShort){ pendingShort = n; benchHint.textContent = 'First end on '+tname(n)+'. Now tap the second terminal.'; return; }
+      if (n!==pendingShort){ faults.shorts.push([pendingShort, n]); addBar(pendingShort, n, faultMat); }
+      pendingShort = null; benchHint.textContent = HINTS.short; sync();
+    } else if (tool==='ground'){
+      const n = pickTerm(px, py); if (!n) return;
+      if (!faults.grounds.includes(n)){ faults.grounds.push(n); addBar(n, 'GND2', gfMat); } sync();
+    } else if (tool==='cut'){
+      const i = pickWire(px, py); if (i===null) return;
+      const w = wires[i];
+      if (faults.cuts.has(i)){ faults.cuts.delete(i); w.mat.transparent=false; w.mat.opacity=1; }
+      else { faults.cuts.add(i); w.mat.transparent=true; w.mat.opacity=0.22; }
+      w.mat.needsUpdate = true; sync();
+    }
+  }
+  function updateReading(){
+    if (!SIM) return;
+    let html = '';
+    if (tool==='volt'){
+      if (!probes.length) html = '<small>No probes placed.</small>';
+      else if (probes.length===1) html = '<small>Red on '+tname(probes[0])+'. Tap the black probe terminal.</small>';
+      else { const v = vBetween(SIM, probes[0], probes[1]);
+        html = (v===null ? 'OL' : fmtV(v)+' AC')+'<small>Red on '+tname(probes[0])+', black on '+tname(probes[1])+(v===null ? '. That terminal isn\u2019t connected to anything.' : '.')+'</small>'; }
+    } else if (tool==='clamp'){
+      if (clampWire===null) html = '<small>No wire clamped.</small>';
+      else { const w = wires[clampWire]; const i = faults.cuts.has(clampWire) ? 0 : (SIM.wireI[clampWire]||0);
+        html = fmtA(i)+'<small>'+wname(w)+(faults.cuts.has(clampWire) ? ' (opened)' : '')+'.</small>'; }
+    } else if (tool==='short' || tool==='ground' || tool==='cut'){
+      const n = faults.shorts.length + faults.grounds.length + faults.cuts.size;
+      html = '<small>'+(n ? n+' fault'+(n>1?'s':'')+' in place.' : 'No faults in place.')+(SIM.faultI>0.01 ? ' Fault current right now: '+fmtA(SIM.faultI)+'.' : '')+'</small>';
+    }
+    reading.innerHTML = html;
+  }
+  svcSel.addEventListener('change', ()=>{ EL.service = svcSel.value; sync(); });
+  brkSel.addEventListener('change', ()=>{ EL.breakerA = +brkSel.value; prot.bHeat = 0; sync(); });
+  elemR.addEventListener('change', ()=>{ const v = parseFloat(elemR.value); if (v>0){ EL.heaterR = v; sync(); } });
+  bResetBrk.addEventListener('click', ()=>{ Object.assign(prot, {breaker:false, bHeat:0, fuseL:false, fuseR:false, fLHeat:0, fRHeat:0, msg:''}); sync(); });
+  bClear.addEventListener('click', ()=>{
+    faults.shorts = []; faults.grounds = [];
+    faults.cuts.forEach(i=>{ wires[i].mat.transparent=false; wires[i].mat.opacity=1; wires[i].mat.needsUpdate=true; }); faults.cuts.clear();
+    faultBars.forEach(f=>scene.remove(f.m)); faultBars.length = 0; pendingShort = null; sync();
+  });
+  bAudit.addEventListener('click', ()=>{
+    simulate();
+    const used = {}; const rows = [];
+    wires.forEach((w,i)=>{ if (!isConductor(w) || !wirePresent(w)) return;
+      used[w.a]=1; used[w.b]=1;
+      const I = faults.cuts.has(i) ? 0 : (SIM.wireI[i]||0);
+      rows.push('<li class="'+(faults.cuts.has(i)?'bad':(I>0.02?'ok':''))+'"><b>'+(faults.cuts.has(i)?'Open':fmtA(I))+'</b><span>'+wname(w)+'</span></li>'); });
+    const idle = Object.keys(termMarkers).filter(n=>termAvailable(n) && !used[n] && !n.startsWith('CAP_'));
+    checks.innerHTML = '<li><b></b><span>'+rows.length+' conductors in the network right now, with the current each one is carrying.</span></li>' + rows.join('') +
+      '<li><b></b><span>Terminals with nothing landed: '+(idle.length ? idle.map(tname).join(', ') : 'none')+'.</span></li>';
+  });
+  bCheck.addEventListener('click', ()=>{
+    const res = runChecks(), pass = res.filter(x=>x.ok).length;
+    checks.innerHTML = '<li><b></b><span>'+pass+' of '+res.length+' checks pass on the wiring as modeled.</span></li>' +
+      res.map(x=>'<li class="'+(x.ok?'ok':'bad')+'"><b>'+(x.ok?'Pass':'Fail')+'</b><span>'+x.t+'<small>'+x.d+'</small></span></li>').join('');
+  });
+  setTool('operate');
+  [swapEl, benchEl, plateEl].forEach(el=>{
+    const head = document.createElement('div'); head.className = 'head';
+    let label = el===plateEl ? null : el.querySelector('.count');
+    if (!label){ label = document.createElement('div'); label.className = 'count'; label.textContent = 'Data plate'; }
+    const b = document.createElement('button'); b.type = 'button'; b.textContent = 'Hide';
+    b.addEventListener('click', ()=>{ const c = el.classList.toggle('collapsed'); b.textContent = c ? 'Show' : 'Hide'; });
+    head.append(label, b); el.prepend(head);
+  });
+  statusEl.addEventListener('click', ()=>statusEl.classList.toggle('open'));
+
+  const home = {pos:new THREE.Vector3(), target:new THREE.Vector3(1,27,2)};
+  function framing(){
+    const aspect = stage.clientWidth/Math.max(1,stage.clientHeight);
+    const d = aspect < 0.8 ? 1.75 : aspect < 1.2 ? 1.3 : 1;
+    home.pos.set(50*d, 50*d+6, 88*d);
+  }
+  function resetView(){ framing(); camera.position.copy(home.pos); controls.target.copy(home.target); controls.update(); }
+  bReset.addEventListener('click', resetView);
+
+  const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
+  let down = null;
+  renderer.domElement.addEventListener('pointerdown', e=>{ down={x:e.clientX,y:e.clientY}; });
+  renderer.domElement.addEventListener('pointerup', e=>{
+    if (!down) return;
+    const moved = Math.hypot(e.clientX-down.x, e.clientY-down.y); down=null;
+    if (moved > 6) return;
+    const r = renderer.domElement.getBoundingClientRect();
+    if (state.bench && tool !== 'operate'){ useTool(e.clientX-r.left, e.clientY-r.top); return; }
+    ndc.set(((e.clientX-r.left)/r.width)*2-1, -((e.clientY-r.top)/r.height)*2+1);
+    ray.setFromCamera(ndc, camera);
+    const hit = ray.intersectObjects([door, panel], true)[0];
+    if (!hit) return;
+    let o = hit.object; while (o && !o.userData.action) o = o.parent;
+    if (o) set(o.userData.action, !state[o.userData.action]);
+  });
+
+  function resize(){
+    const w = stage.clientWidth, h = stage.clientHeight;
+    renderer.setSize(w, h, false); camera.aspect = w/Math.max(1,h); camera.updateProjectionMatrix();
+  }
+  window.addEventListener('resize', resize);
+  resize(); resetView(); sync();
+
+  const clock = new THREE.Clock();
+  let lastPanel = -1;
+  function tick(){
+    const dt = Math.min(clock.getDelta(), 0.05);
+    const k = reduceMotion ? 1 : 1 - Math.exp(-dt*5);
+    if (protect(dt)) sync();
+    const L = logic(state);
+    cur.door += ((state.door?1.9:0) - cur.door)*k;
+    cur.panel += ((state.panel?2.05:0) - cur.panel)*k;
+    const spinK = reduceMotion ? 1 : 1 - Math.exp(-dt*(L.motor ? 1.4 : (L.cap ? 4.5 : 0.9)));
+    cur.speed += ((L.motor?16:0) - cur.speed)*spinK;
+    cur.heat += ((SIM.heaterP>100 ? Math.min(1, 0.4+SIM.heaterP/9000) : 0) - cur.heat)*(reduceMotion?1:1-Math.exp(-dt*1.1));
+    cur.toggle += ((state.blower?-0.4:0.4) - cur.toggle)*k;
+    cur.rocker += ((state.cool?-0.18:0.18) - cur.rocker)*k;
+    door.rotation.y = cur.door;
+    panel.rotation.y = cur.panel;
+    if (!reduceMotion) wheel.rotation.y += cur.speed*dt;
+    togglePivot.rotation.x = cur.toggle;
+    rocker.rotation.x = cur.rocker;
+    elementMat.emissiveIntensity = cur.heat*2.4;
+    elementMat.color.setRGB(0.43+cur.heat*0.4, 0.41+cur.heat*0.05, 0.4);
+    ovenGlow.intensity = cur.heat*1.6;
+    lampMat.emissiveIntensity = SIM.lampV > 150 ? 3 : 0;
+    // motor swap: fades, visibility and highlight pulses
+    const st = STEPS[swapStep], kk = reduceMotion ? 1 : 1 - Math.exp(-dt*3);
+    cur.old += (st.old - cur.old)*kk; cur.cap += (st.cap - cur.cap)*kk; cur.nw += (st.nw - cur.nw)*kk;
+    oldMats.forEach(m=>m.opacity=cur.old); oldMotor.visible = cur.old > 0.02; oldMotor.position.z = (1-cur.old)*5;
+    capMats.forEach(m=>m.opacity=cur.cap); capG.visible = cur.cap > 0.02; capG.position.z = (1-cur.cap)*4;
+    newMats.forEach(m=>m.opacity=cur.nw); newMotor.visible = cur.nw > 0.02; newMotor.position.z = (1-cur.nw)*5;
+    nuts.visible = swapStep >= 5;
+    const pulse = 0.5 + 0.5*Math.sin(clock.elapsedTime*6);
+    const hl = state.swap ? st.hl : {};
+    wires.forEach((w,wi)=>{
+      if (w.mesh) w.mesh.visible = (w.tag==='cap' ? capPresent() : w.tag==='oldMotor' ? swapStep<=2 : w.tag==='new' ? swapStep>=5 : true) && (!focusId || focusWires.has(wi));
+      const h = hl[w.tag] || (w.key && hl[w.key]);
+      if (h){ w.mat.emissive.setHex(HL[h]); w.mat.emissiveIntensity = 0.3 + 1.3*pulse; }
+      else { const I = faults.cuts.has(wi) ? 0 : (SIM.wireI[wi]||0);
+        if (I > 60){ w.mat.emissive.setHex(0xff2a1a); w.mat.emissiveIntensity = 2.2; }
+        else { w.mat.emissive.setHex(w.em); w.mat.emissiveIntensity = I > 0.02 ? Math.min(1.8, 0.5 + 0.45*Math.log10(1 + I*5)) : 0; }
+        if (I > 0.02 && !reduceMotion) w.flow.offset.x -= (SIM.wireDir[wi]||1) * (0.6 + 1.2*Math.log10(1 + I*5)) * dt; }
+    });
+    Object.keys(partMats).forEach(key=>{
+      const h = hl[key];
+      partMats[key].forEach(m=>{ if (h){ m.emissive.setHex(HL[h]); m.emissiveIntensity = 0.15 + 0.6*pulse; } else { m.emissiveIntensity = 0; } });
+    });
+    controls.update();
+    scene.updateMatrixWorld();
+    if (Math.abs(cur.panel-lastPanel) > 1e-4){ wires.forEach(w=>{ if (w.dyn) buildWire(w); }); lastPanel = cur.panel; }
+    placeLabels();
+    // test bench overlays
+    const showMarkers = state.bench && (tool==='volt' || tool==='short' || tool==='ground');
+    Object.keys(termMarkers).forEach(n=>{ const m=termMarkers[n]; m.visible = showMarkers && termAvailable(n); m.material = n===pendingShort ? pendMat : markerMat; });
+    probeMeshes.forEach((m,i)=>{ const n=probes[i]; m.visible = state.bench && tool==='volt' && !!n && termAvailable(n); if (m.visible) m.position.copy(wp(n,0.3)); });
+    clampMesh.visible = state.bench && tool==='clamp' && clampWire!==null && wirePresent(wires[clampWire]);
+    if (clampMesh.visible){ const sm=wires[clampWire].samples; const a=sm[14], b=sm[15]; clampMesh.position.copy(a); clampMesh.quaternion.setFromUnitVectors(V(0,0,1), b.clone().sub(a).normalize()); }
+    faultBars.forEach(f=>placeBar(f.m, wp(f.a,0.25), wp(f.b,0.25)));
+    if (flashT > 0){ flashT -= dt; flash.position.copy(flashPos); flash.intensity = Math.max(0, flashT)*14; } else flash.intensity = 0;
+    readT += dt; if (readT > 0.25){ readT = 0; updateReading(); if (prot.bHeat > 0.02) statusText(); }
+    renderer.render(scene, camera);
+    requestAnimationFrame(tick);
+  }
+  tick();
+}
+})();
+</script>
+</body>
+</html>
